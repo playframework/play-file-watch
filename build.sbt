@@ -6,6 +6,7 @@ lazy val `play-file-watch` = project
   .settings(
     crossScalaVersions := Seq("2.10.5", "2.11.7"),
     libraryDependencies ++= Seq(
+      "net.contentobjects.jnotify" % "jnotify" % "0.94-play-1",
       "org.scala-sbt" %% "io" % "1.0.0-M6",
       "org.specs2" %% "specs2-core" % "3.6.6" % Test
     )
