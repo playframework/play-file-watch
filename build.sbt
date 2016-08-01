@@ -1,6 +1,6 @@
 lazy val `play-file-watch` = project
   .in(file("."))
-  .enablePlugins(PlayLibrary)
+  .enablePlugins(PlayLibrary, PlayReleaseBase)
   .settings(scalariformSettings: _*)
   .settings(interplayOverrideSettings: _*)
   .settings(
