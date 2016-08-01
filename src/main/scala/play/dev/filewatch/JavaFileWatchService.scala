@@ -1,9 +1,7 @@
 package play.dev.filewatch
 
+import better.files.{ File => ScalaFile, _ }
 import java.io.File
-
-import sbt.io.{ DirectoryFilter, HiddenFileFilter }
-import sbt.io.syntax._
 
 import scala.util.control.NonFatal
 
@@ -86,6 +84,8 @@ class JavaFileWatchService(logger: LoggerProxy) extends FileWatchService {
   }
 
   private def allSubDirectories(dirs: Seq[File]) = {
-    (dirs ** (DirectoryFilter -- HiddenFileFilter)).get.distinct
+    dirs.iterator.flatMap { dir =>
+      dir.toScala.collectChildren(child => child.isDirectory && !child.isHidden)
+    }.map(_.toJava).toSeq.distinct
   }
 }

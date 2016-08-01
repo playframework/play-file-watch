@@ -3,7 +3,7 @@ package play.dev.filewatch
 import java.io.File
 import java.net.URLClassLoader
 
-import sbt.io.IO
+import better.files.{ File => ScalaFile, _ }
 
 import scala.util.Try
 
@@ -76,14 +76,16 @@ private object JNotifyFileWatchService {
               .map(new File(_))
               .getOrElse(sys.error("Missing JNotify?"))
 
-            val nativeLibrariesDirectory = new File(targetDirectory, "native_libraries")
+            val jnotifyTarget = targetDirectory.toScala / "jnotify"
+            val nativeLibrariesDirectory = jnotifyTarget / "native_libraries"
 
             if (!nativeLibrariesDirectory.exists) {
-              // Unzip native libraries from the jnotify jar to target/native_libraries
-              IO.unzip(jnotifyJarFile, targetDirectory, (name: String) => name.startsWith("native_libraries"))
+              // Unzip native libraries from the jnotify jar to target/jnotify/native_libraries
+              jnotifyJarFile.toScala.unzipTo(jnotifyTarget)
             }
 
-            val libs = new File(nativeLibrariesDirectory, System.getProperty("sun.arch.data.model") + "bits").getAbsolutePath
+            val libs = (nativeLibrariesDirectory / (System.getProperty("sun.arch.data.model") + "bits"))
+              .toJava.getAbsolutePath
 
             // Hack to set java.library.path
             System.setProperty("java.library.path", {

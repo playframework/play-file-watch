@@ -2,8 +2,7 @@ package play.dev.filewatch
 
 import java.io.File
 
-import sbt.io.PathFinder
-import sbt.io.syntax._
+import better.files.{ File => ScalaFile, _ }
 
 import annotation.tailrec
 
@@ -11,11 +10,6 @@ import annotation.tailrec
  * A polling Play watch service. Polls in the background.
  */
 class PollingFileWatchService(val pollDelayMillis: Int) extends FileWatchService {
-
-  // Work around for https://github.com/sbt/sbt/issues/1973
-  def distinctPathFinder(pathFinder: PathFinder) = PathFinder {
-    pathFinder.get.map(p => (p.getAbsolutePath, p)).toMap.values
-  }
 
   def watch(filesToWatch: Seq[File], onChange: () => Unit) = {
 
@@ -25,7 +19,7 @@ class PollingFileWatchService(val pollDelayMillis: Int) extends FileWatchService
       def run() = {
         var state = WatchState.empty
         while (!stopped) {
-          val (triggered, newState) = SourceModificationWatch.watch(distinctPathFinder(filesToWatch.allPaths),
+          val (triggered, newState) = SourceModificationWatch.watch(() => filesToWatch.iterator.flatMap(_.toScala.listRecursively),
             pollDelayMillis, state)(stopped)
           if (triggered) onChange()
           state = newState
@@ -45,14 +39,15 @@ class PollingFileWatchService(val pollDelayMillis: Int) extends FileWatchService
  * Copied from sbt.
  */
 object SourceModificationWatch {
+  type PathFinder = () => Iterator[ScalaFile]
+
   @tailrec def watch(sourcesFinder: PathFinder, pollDelayMillis: Int, state: WatchState)(terminationCondition: => Boolean): (Boolean, WatchState) =
     {
       import state._
 
-      val sourceFiles: Iterable[java.io.File] = sourcesFinder.get
-      val sourceFilesPath: Set[String] = sourceFiles.map(_.getCanonicalPath)(collection.breakOut)
+      val sourceFilesPath: Set[String] = sourcesFinder().map(_.toJava.getCanonicalPath).toSet
       val lastModifiedTime =
-        (0L /: sourceFiles) { (acc, file) => math.max(acc, file.lastModified) }
+        (0L /: sourcesFinder()) { (acc, file) => math.max(acc, file.lastModifiedTime.toEpochMilli) }
 
       val sourcesModified =
         lastModifiedTime > lastCallbackCallTime ||
