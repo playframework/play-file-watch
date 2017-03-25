@@ -25,7 +25,7 @@ class PollingFileWatchService(val pollDelayMillis: Int) extends FileWatchService
           state = newState
         }
       }
-    }, "sbt-play-watch-service")
+    }, "play-watch-service")
     thread.setDaemon(true)
     thread.start()
 
