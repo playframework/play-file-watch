@@ -47,9 +47,9 @@ class JavaFileWatchService(logger: LoggerProxy) extends FileWatchService {
 
             val events = watchKey.pollEvents()
 
-            import scala.collection.JavaConversions._
+            import scala.collection.JavaConverters._
             // If a directory has been created, we must watch it and its sub directories
-            events.foreach { event =>
+            events.asScala.foreach { event =>
 
               if (event.kind == ENTRY_CREATE) {
                 val file = watchKey.watchable.asInstanceOf[Path].resolve(event.context.asInstanceOf[Path]).toFile

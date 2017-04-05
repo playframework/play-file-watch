@@ -11,10 +11,18 @@ lazy val `play-file-watch` = project
       // sbt-io is not quite ready to be used as a stand alone library in something that needs to support both sbt 0.13
       // and maven. These reasons include sbt-io 0.13.x isn't published to maven central, and sbt-io 1.0.x may not
       // support Scala 2.10.
-      "com.github.pathikrit" %% "better-files" % "2.17.1",
+      betterFiles(scalaVersion.value),
       "org.specs2" %% "specs2-core" % "3.8.6" % Test
     )
   )
+
+def betterFiles(scalaVersion: String): ModuleID = {
+  val version = scalaVersion.split('.')(1) match {
+    case "10" => "2.17.0"
+    case "11" | "12" => "2.17.1"
+  }
+  "com.github.pathikrit" %% "better-files" % version
+}
 
 playBuildRepoName in ThisBuild := "play-file-watch"
 
