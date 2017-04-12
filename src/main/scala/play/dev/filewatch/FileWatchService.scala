@@ -4,7 +4,7 @@ import java.io.File
 import java.util.concurrent.Callable
 import java.util.{ List => JList, Locale }
 
-import scala.collection.JavaConversions
+import scala.collection.JavaConverters._
 import scala.util.{ Properties, Try }
 
 /**
@@ -28,7 +28,9 @@ trait FileWatchService {
    * @return A watcher
    */
   def watch(filesToWatch: JList[File], onChange: Callable[Void]): FileWatcher = {
-    watch(JavaConversions.asScalaBuffer(filesToWatch), () => { onChange.call })
+    val buffer: Seq[java.io.File] = filesToWatch.asScala
+    val function: () => Unit = () => { onChange.call }
+    watch(buffer, function)
   }
 
 }
