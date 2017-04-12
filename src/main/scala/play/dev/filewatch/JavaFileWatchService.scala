@@ -71,7 +71,7 @@ class JavaFileWatchService(logger: LoggerProxy) extends FileWatchService {
           watcher.close()
         }
       }
-    }, "sbt-play-watch-service")
+    }, "play-watch-service")
     thread.setDaemon(true)
     thread.start()
 

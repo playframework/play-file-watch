@@ -85,7 +85,7 @@ object FileWatchService {
 
   def jdk7(logger: LoggerProxy): FileWatchService = new JavaFileWatchService(logger)
 
-  def sbt(pollDelayMillis: Int): FileWatchService = new PollingFileWatchService(pollDelayMillis)
+  def polling(pollDelayMillis: Int): FileWatchService = new PollingFileWatchService(pollDelayMillis)
 
   def optional(watchService: Try[FileWatchService]): FileWatchService = new OptionalFileWatchServiceDelegate(watchService)
 }
