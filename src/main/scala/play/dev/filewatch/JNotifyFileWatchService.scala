@@ -2,9 +2,11 @@ package play.dev.filewatch
 
 import java.io.File
 import java.net.URLClassLoader
+import java.util.zip.ZipFile
 
 import better.files.{ File => ScalaFile, _ }
 
+import scala.io.Codec
 import scala.util.Try
 
 private[play] class JNotifyFileWatchService(delegate: JNotifyFileWatchService.JNotifyDelegate) extends FileWatchService {
@@ -81,7 +83,7 @@ private object JNotifyFileWatchService {
 
             if (!nativeLibrariesDirectory.exists) {
               // Unzip native libraries from the jnotify jar to target/jnotify/native_libraries
-              jnotifyJarFile.toScala.unzipTo(jnotifyTarget)
+              unzipTo(jnotifyJarFile.toScala, jnotifyTarget)
             }
 
             val libs = (nativeLibrariesDirectory / (System.getProperty("sun.arch.data.model") + "bits"))
@@ -122,4 +124,21 @@ private object JNotifyFileWatchService {
       case Some(ws) => ws
     }
   }
+
+  /**
+   * Unzips a zip file. This is copied from better files, however it doesn't require each file in the zip file to
+   * have a parent directory listed, it does this by using createIfNotExists(createParents = true) instead of just
+   * createChild().
+   */
+  private def unzipTo(thisFile: ScalaFile, destination: ScalaFile)(implicit codec: Codec): destination.type = {
+    import scala.collection.JavaConverters._
+    for {
+      zipFile <- new ZipFile(thisFile.toJava, codec).autoClosed
+      entry <- zipFile.entries().asScala
+      file = (destination / entry.getName).createIfNotExists(entry.isDirectory, createParents = true)
+      if !entry.isDirectory
+    } zipFile.getInputStream(entry) > file.newOutputStream
+    destination
+  }
+
 }

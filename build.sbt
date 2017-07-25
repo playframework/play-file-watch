@@ -13,7 +13,8 @@ lazy val `play-file-watch` = project
       // support Scala 2.10.
       betterFiles(scalaVersion.value),
       "org.specs2" %% "specs2-core" % "3.8.6" % Test
-    )
+    ),
+    parallelExecution in Test := false
   )
 
 def betterFiles(scalaVersion: String): ModuleID = {
