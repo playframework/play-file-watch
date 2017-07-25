@@ -4,7 +4,7 @@ lazy val `play-file-watch` = project
   .settings(scalariformSettings: _*)
   .settings(interplayOverrideSettings: _*)
   .settings(
-    crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1"),
+    crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.2"),
     libraryDependencies ++= Seq(
       "com.lightbend.play" % "jnotify" % "0.94-play-2",
       // Using this rather than sbt-io because it also needs to run on maven, and due to various circumstantial reasons,
