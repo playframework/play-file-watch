@@ -6,16 +6,27 @@ import org.specs2.mutable.Specification
 import scala.concurrent.duration._
 
 class JavaFileWatchServiceSpec extends FileWatchServiceSpec {
+  // the mac impl consistently fails because it takes more than 5s so skip this one on mac
+  args(skipAll = FileWatchService.os == FileWatchService.OS.Mac)
+
   override def watchService = FileWatchService.jdk7(FileWatchServiceSpecLoggerProxy)
 }
 
-class PollingFileWatchServiceSpec extends FileWatchServiceSpec {
-  override def watchService = FileWatchService.polling(200)
+class MacFileWatchServiceSpec extends FileWatchServiceSpec {
+  // this only works on mac
+  args(skipAll = FileWatchService.os != FileWatchService.OS.Mac)
+
+  override def watchService = FileWatchService.mac(FileWatchServiceSpecLoggerProxy)
 }
 
 class JNotifyFileWatchServiceSpec extends FileWatchServiceSpec {
   private val jnotifyDir = File("./target/jnotify").createIfNotExists(asDirectory = true)
+
   override def watchService = FileWatchService.jnotify(jnotifyDir.toJava)
+}
+
+class PollingFileWatchServiceSpec extends FileWatchServiceSpec {
+  override def watchService = FileWatchService.polling(200)
 }
 
 object FileWatchServiceSpecLoggerProxy extends LoggerProxy {
@@ -43,7 +54,20 @@ abstract class FileWatchServiceSpec extends Specification {
     }
   }
 
-  @volatile var changed = false
+  @volatile var changed: Boolean = false
+  @volatile var startTime: Long = 0
+  @volatile var endTime: Long = 0
+
+  private def reset(): Unit = {
+    Thread.sleep(200)
+    changed = false
+    startTime = System.nanoTime
+  }
+
+  private def reportChange(): Unit = {
+    endTime = System.nanoTime
+    changed = true
+  }
 
   private def assertChanged() = {
     val deadline = 5.seconds.fromNow
@@ -53,17 +77,13 @@ abstract class FileWatchServiceSpec extends Specification {
       }
       Thread.sleep(200)
     }
+    printf("%s: %7.1f ms\n", getClass.getSimpleName, (endTime - startTime).nanoseconds.toUnit(MILLISECONDS))
     ok
   }
 
-  private def reset() = {
-    Thread.sleep(50)
-    changed = false
-  }
-
   private def watchFiles[T](files: File*)(block: => T): T = {
-    changed = false
-    val watcher = watchService.watch(files.map(_.toJava), () => changed = true)
+    val watcher = watchService.watch(files.map(_.toJava), () => reportChange())
+    reset()
     try {
       block
     } finally {
@@ -90,10 +110,8 @@ abstract class FileWatchServiceSpec extends Specification {
     }
 
     "detect changes on files in new subdirectories" in withTempDir { dir =>
+      val subDir = dir.createChild("subdir", asDirectory = true)
       watchFiles(dir) {
-        val subDir = dir.createChild("subdir", asDirectory = true)
-        assertChanged()
-        reset()
         (subDir / "test").write("new file")
         assertChanged()
       }
