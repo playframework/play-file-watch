@@ -79,6 +79,8 @@ object FileWatchService {
     }
 
     def watch(filesToWatch: Seq[File], onChange: () => Unit) = delegate.watch(filesToWatch, onChange)
+
+    override def toString = delegate.toString
   }
 
   def jnotify(targetDirectory: File): FileWatchService = optional(JNotifyFileWatchService(targetDirectory))
