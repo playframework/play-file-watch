@@ -76,7 +76,10 @@ private object JNotifyFileWatchService {
               .map(_.getFile)
               .find(_.contains("/jnotify"))
               .map(new File(_))
-              .getOrElse(sys.error("Missing JNotify?"))
+              .getOrElse(sys.error(
+                """Missing JNotify? To use JNotify you need to add the dependency:
+                  |libraryDependencies += "com.lightbend.play" % "jnotify" % "0.94-play-2"
+                  |""".stripMargin))
 
             val jnotifyTarget = targetDirectory.toScala / "jnotify"
             val nativeLibrariesDirectory = jnotifyTarget / "native_libraries"

@@ -2,10 +2,10 @@ package play.dev.filewatch
 
 import java.io.File
 import java.util.concurrent.Callable
-import java.util.{ List => JList, Locale }
+import java.util.{ Locale, List => JList }
 
 import scala.collection.JavaConverters._
-import scala.util.{ Properties, Try }
+import scala.util.Try
 
 /**
  * A service that can watch files
@@ -47,35 +47,41 @@ trait FileWatcher {
 }
 
 object FileWatchService {
-  private sealed trait OS
-  private case object Windows extends OS
-  private case object Linux extends OS
-  private case object OSX extends OS
-  private case object Other extends OS
+  private[filewatch] sealed trait OS {
 
-  private val os: OS = {
-    sys.props.get("os.name").map { name =>
+  }
+  private[filewatch] object OS {
+    case object Windows extends OS
+    case object Linux extends OS
+    case object Mac extends OS
+    case object Other extends OS
+  }
+  import OS._
+
+  private[filewatch] val os: OS = {
+    sys.props.get("os.name").fold(Other: OS) { name =>
       name.toLowerCase(Locale.ENGLISH) match {
-        case osx if osx.contains("darwin") || osx.contains("mac") => OSX
+        case mac if mac.contains("darwin") || mac.contains("mac") => Mac
         case windows if windows.contains("windows") => Windows
         case linux if linux.contains("linux") => Linux
         case _ => Other
       }
-    }.getOrElse(Other)
+    }
   }
 
   def defaultWatchService(targetDirectory: File, pollDelayMillis: Int, logger: LoggerProxy): FileWatchService = new FileWatchService {
     lazy val delegate = os match {
-      // If Windows or Linux and JDK7, use JDK7 watch service
-      case (Windows | Linux) if Properties.isJavaAtLeast("1.7") => new JavaFileWatchService(logger)
-      // If Windows, Linux or OSX, use JNotify but fall back to SBT
-      case (Windows | Linux | OSX) => JNotifyFileWatchService(targetDirectory).recover {
-        case e =>
-          logger.warn("Error loading JNotify watch service: " + e.getMessage)
+      // If Windows or Linux, use JDK7 Watch Service (assume JDK7+)
+      case (Windows | Linux) => jdk7(logger)
+      // If mac OS, use the mac implementation
+      case Mac => try mac(logger) catch {
+        case e: Throwable =>
+          logger.warn("Error loading Mac OS X watch service: " + e.getMessage)
           logger.trace(e)
-          new PollingFileWatchService(pollDelayMillis)
-      }.get
-      case _ => new PollingFileWatchService(pollDelayMillis)
+          polling(pollDelayMillis)
+      }
+      // Fall back to polling watch service
+      case _ => polling(pollDelayMillis)
     }
 
     def watch(filesToWatch: Seq[File], onChange: () => Unit) = delegate.watch(filesToWatch, onChange)
@@ -85,11 +91,15 @@ object FileWatchService {
 
   def jnotify(targetDirectory: File): FileWatchService = optional(JNotifyFileWatchService(targetDirectory))
 
-  def jdk7(logger: LoggerProxy): FileWatchService = new JavaFileWatchService(logger)
+  def jdk7(logger: LoggerProxy): FileWatchService = default(logger, isMac = false)
+
+  def mac(logger: LoggerProxy): FileWatchService = default(logger, isMac = true)
 
   def polling(pollDelayMillis: Int): FileWatchService = new PollingFileWatchService(pollDelayMillis)
 
   def optional(watchService: Try[FileWatchService]): FileWatchService = new OptionalFileWatchServiceDelegate(watchService)
+
+  def default(logger: LoggerProxy, isMac: Boolean): FileWatchService = new DefaultFileWatchService(logger, isMac)
 }
 
 /**
