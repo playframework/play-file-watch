@@ -51,10 +51,4 @@ class DefaultFileWatchService(logger: LoggerProxy, isMac: Boolean) extends FileW
       override def stop(): Unit = directoryWatcher.close()
     }
   }
-
-  private def allSubDirectories(dirs: Seq[File]) = {
-    dirs.iterator.flatMap { dir =>
-      dir.toScala.collectChildren(child => child.isDirectory && !child.isHidden)
-    }.map(_.toJava).toSeq.distinct
-  }
 }
