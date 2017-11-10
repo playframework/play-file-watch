@@ -41,13 +41,21 @@ class PollingFileWatchService(val pollDelayMillis: Int) extends FileWatchService
 object SourceModificationWatch {
   type PathFinder = () => Iterator[ScalaFile]
 
+  private def listFiles(sourcesFinder: PathFinder): Set[ScalaFile] = sourcesFinder().toSet
+
+  private def findLastModifiedTime(files: Set[ScalaFile]): Long = {
+    if (files.nonEmpty) files.maxBy(_.lastModifiedTime).lastModifiedTime.toEpochMilli
+    else 0L
+  }
+
   @tailrec def watch(sourcesFinder: PathFinder, pollDelayMillis: Int, state: WatchState)(terminationCondition: => Boolean): (Boolean, WatchState) =
     {
       import state._
 
-      val sourceFilesPath: Set[String] = sourcesFinder().map(_.toJava.getCanonicalPath).toSet
-      val lastModifiedTime =
-        (0L /: sourcesFinder()) { (acc, file) => math.max(acc, file.lastModifiedTime.toEpochMilli) }
+      val filesToWatch = listFiles(sourcesFinder)
+
+      val sourceFilesPath: Set[String] = filesToWatch.map(_.toJava.getCanonicalPath)
+      val lastModifiedTime = findLastModifiedTime(filesToWatch)
 
       val sourcesModified =
         lastModifiedTime > lastCallbackCallTime ||
