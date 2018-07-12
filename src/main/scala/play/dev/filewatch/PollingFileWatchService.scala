@@ -19,7 +19,8 @@ class PollingFileWatchService(val pollDelayMillis: Int) extends FileWatchService
       def run() = {
         var state = WatchState.empty
         while (!stopped) {
-          val (triggered, newState) = SourceModificationWatch.watch(() => filesToWatch.iterator.flatMap(_.toScala.listRecursively),
+          val (triggered, newState) = SourceModificationWatch.watch(
+            () => filesToWatch.iterator.flatMap(_.toScala.listRecursively),
             pollDelayMillis, state)(stopped)
           if (triggered) onChange()
           state = newState

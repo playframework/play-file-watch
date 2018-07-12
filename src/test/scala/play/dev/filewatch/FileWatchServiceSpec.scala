@@ -1,42 +1,42 @@
 package play.dev.filewatch
 
 import better.files._
-
 import org.specs2.mutable.Specification
+
 import scala.concurrent.duration._
 
 class JavaFileWatchServiceSpec extends FileWatchServiceSpec {
   // the mac impl consistently fails because it takes more than 5s so skip this one on mac
   args(skipAll = FileWatchService.os == FileWatchService.OS.Mac)
 
-  override def watchService = FileWatchService.jdk7(FileWatchServiceSpecLoggerProxy)
+  override def watchService: FileWatchService = FileWatchService.jdk7(FileWatchServiceSpecLoggerProxy)
 }
 
 class MacFileWatchServiceSpec extends FileWatchServiceSpec {
   // this only works on mac
   args(skipAll = FileWatchService.os != FileWatchService.OS.Mac)
 
-  override def watchService = FileWatchService.mac(FileWatchServiceSpecLoggerProxy)
+  override def watchService: FileWatchService = FileWatchService.mac(FileWatchServiceSpecLoggerProxy)
 }
 
 class JNotifyFileWatchServiceSpec extends FileWatchServiceSpec {
   private val jnotifyDir = File("./target/jnotify").createIfNotExists(asDirectory = true)
 
-  override def watchService = FileWatchService.jnotify(jnotifyDir.toJava)
+  override def watchService: FileWatchService = FileWatchService.jnotify(jnotifyDir.toJava)
 }
 
 class PollingFileWatchServiceSpec extends FileWatchServiceSpec {
-  override def watchService = FileWatchService.polling(200)
+  override def watchService: FileWatchService = FileWatchService.polling(200)
 }
 
 object FileWatchServiceSpecLoggerProxy extends LoggerProxy {
-  override def verbose(message: => String) = ()
-  override def debug(message: => String) = ()
-  override def info(message: => String) = ()
-  override def warn(message: => String) = ()
-  override def error(message: => String) = ()
-  override def trace(t: => Throwable) = ()
-  override def success(message: => String) = ()
+  override def verbose(message: => String): Unit = ()
+  override def debug(message: => String): Unit = ()
+  override def info(message: => String): Unit = ()
+  override def warn(message: => String): Unit = ()
+  override def error(message: => String): Unit = ()
+  override def trace(t: => Throwable): Unit = ()
+  override def success(message: => String): Unit = ()
 }
 
 abstract class FileWatchServiceSpec extends Specification {
