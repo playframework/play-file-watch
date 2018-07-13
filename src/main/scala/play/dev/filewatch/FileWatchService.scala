@@ -84,9 +84,9 @@ object FileWatchService {
       case _ => polling(pollDelayMillis)
     }
 
-    def watch(filesToWatch: Seq[File], onChange: () => Unit) = delegate.watch(filesToWatch, onChange)
+    override def watch(filesToWatch: Seq[File], onChange: () => Unit): FileWatcher = delegate.watch(filesToWatch, onChange)
 
-    override def toString = delegate.toString
+    override def toString: String = delegate.toString
   }
 
   def jnotify(targetDirectory: File): FileWatchService = optional(JNotifyFileWatchService(targetDirectory))
@@ -106,7 +106,7 @@ object FileWatchService {
  * Watch service that delegates to a try. This allows it to exist without reporting an exception unless it's used.
  */
 class OptionalFileWatchServiceDelegate(val watchService: Try[FileWatchService]) extends FileWatchService {
-  def watch(filesToWatch: Seq[File], onChange: () => Unit) = {
+  override def watch(filesToWatch: Seq[File], onChange: () => Unit): FileWatcher = {
     watchService.map(ws => ws.watch(filesToWatch, onChange)).get
   }
 }

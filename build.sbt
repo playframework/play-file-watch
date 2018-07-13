@@ -22,6 +22,7 @@ lazy val `play-file-watch` = project
     crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.6"),
     libraryDependencies ++= Seq(
       "io.methvin" % "directory-watcher" % "0.5.0",
+      "org.scala-sbt" %% "io" % "1.1.10",
       betterFiles(scalaBinaryVersion.value),
       specs2(scalaBinaryVersion.value) % Test,
 
