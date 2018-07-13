@@ -12,4 +12,9 @@ install:
 build_script:
   - sbt compile
 test_script:
-  - sbt test
+  # -Djna.nosys=true is required to avoid the following error:
+  # There is an incompatible JNA native library installed on this system
+  #
+  # There is an issue in sbt-io about it:
+  # https://github.com/sbt/io/issues/110
+  - sbt -Djna.nosys=true test
