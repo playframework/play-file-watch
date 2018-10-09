@@ -1,9 +1,8 @@
 package play.dev.filewatch
 
 import java.io.File
-import java.nio.file._
+import java.nio.file.FileSystems
 
-import better.files.{ File => ScalaFile, _ }
 import io.methvin.watcher.{ DirectoryChangeEvent, DirectoryChangeListener, DirectoryWatcher }
 import io.methvin.watchservice.MacOSXListeningWatchService
 
@@ -30,10 +29,14 @@ class DefaultFileWatchService(logger: LoggerProxy, isMac: Boolean) extends FileW
     }
 
     val watchService = if (isMac) new MacOSXListeningWatchService() else FileSystems.getDefault.newWatchService()
-    val listener = new DirectoryChangeListener {
-      override def onEvent(event: DirectoryChangeEvent): Unit = onChange()
-    }
-    val directoryWatcher = new DirectoryWatcher(dirsToWatch.map(_.toPath).asJava, listener, watchService)
+    val directoryWatcher =
+      DirectoryWatcher.builder()
+        .paths(dirsToWatch.map(_.toPath).asJava)
+        .listener(new DirectoryChangeListener {
+          override def onEvent(event: DirectoryChangeEvent): Unit = onChange()
+        })
+        .watchService(watchService)
+        .build()
 
     val thread = new Thread(new Runnable {
       override def run(): Unit = {
