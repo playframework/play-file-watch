@@ -19,11 +19,12 @@ lazy val `play-file-watch` = project
   .settings(
     // workaround for https://github.com/scala/scala-dev/issues/249
     scalacOptions in (Compile, doc) ++= (if (scalaBinaryVersion.value == "2.12") Seq("-no-java-comments") else Nil),
-    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.6"),
+
+    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.7"),
     libraryDependencies ++= Seq(
-      "io.methvin" % "directory-watcher" % "0.8.0",
-      betterFiles(scalaBinaryVersion.value),
-      specs2(scalaBinaryVersion.value) % Test,
+      "io.methvin" % "directory-watcher" % "0.8.1",
+      "com.github.pathikrit" %% "better-files" % pickVersion(scalaBinaryVersion.value, default = "2.17.1", forScala210 = "2.17.0"),
+      "org.specs2" %% "specs2-core" % pickVersion(scalaBinaryVersion.value, default = "3.10.0", forScala210 = "4.3.5") % Test,
 
       // jnotify dependency needs to be added explicitly in user's apps
       "com.lightbend.play" % "jnotify" % "0.94-play-2" % Test
@@ -31,20 +32,9 @@ lazy val `play-file-watch` = project
     parallelExecution in Test := false
   )
 
-def specs2(scalaBinaryVersion: String): ModuleID = {
-  val version = scalaBinaryVersion match {
-    case "2.10" => "3.10.0"
-    case "2.11" | "2.12" => "4.3.2"
-  }
-  "org.specs2" %% "specs2-core" % version
-}
-
-def betterFiles(scalaBinaryVersion: String): ModuleID = {
-  val version = scalaBinaryVersion match {
-    case "2.10" => "2.17.0"
-    case "2.11" | "2.12" => "2.17.1"
-  }
-  "com.github.pathikrit" %% "better-files" % version
+def pickVersion(scalaBinaryVersion: String, default: String, forScala210: String): String = scalaBinaryVersion match {
+  case "2.10" => forScala210
+  case _ => default
 }
 
 playBuildRepoName in ThisBuild := "play-file-watch"
