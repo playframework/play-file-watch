@@ -1,13 +1,36 @@
 version: '{build}'
-os: Windows Server 2012
+
 environment:
   JAVA_OPTS: -Dfile.encoding=UTF8
   SBT_OPTS: -Dfile.encoding=UTF8
+  JABBA_HOME: "%USERPROFILE%\\.jabba"
+  SBT_HOME: "%USERPROFILE%\\sbt"
+  matrix:
+    - JABBA_JDK: adopt@1.8.192-12
+    - JABBA_JDK: adopt@1.11.0-1
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - JABBA_JDK: adopt@1.11.0-1
+
 install:
-  - cmd: choco install sbt -ia "INSTALLDIR=""C:\sbt"""
-  - cmd: SET PATH=C:\sbt\bin;%JAVA_HOME%\bin;%PATH%
+  - cmd: choco install sbt -ia "INSTALLDIR=""%SBT_HOME%"""
+  - ps: (new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/shyiko/jabba/master/install.ps1', 'install.ps1')
+  - ps: powershell ". ""install.ps1"""
+  - cmd: SET JAVA_HOME=%JABBA_HOME%\jdk\%JABBA_JDK%
+  - cmd: SET PATH=%JAVA_HOME%\bin;%SBT_HOME%\bin;%PATH%
   - cmd: SET SBT_OPTS=-Xmx4G -XX:MaxPermSize=1G
+  - cmd: "%JABBA_HOME%\\bin\\jabba install %JABBA_JDK%"
+  - cmd: java -Xmx32m -version
+
 build_script:
   - sbt compile
+
 test_script:
   - sbt test
+
+cache:
+  - "%USERPROFILE%\\.sbt"
+  - "%USERPROFILE%\\.ivy2\\cache"
+  - "%USERPROFILE%\\.jabba"
