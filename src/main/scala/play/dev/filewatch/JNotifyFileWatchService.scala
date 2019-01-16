@@ -137,7 +137,7 @@ private object JNotifyFileWatchService {
   private def unzipTo(thisFile: ScalaFile, destination: ScalaFile)(implicit codec: Codec): destination.type = {
     import scala.collection.JavaConverters._
     for {
-      zipFile <- new ZipFile(thisFile.toJava, codec).autoClosed
+      zipFile <- new ZipFile(thisFile.toJava, codec.charSet).autoClosed
       entry <- zipFile.entries().asScala
       file = (destination / entry.getName).createIfNotExists(entry.isDirectory, createParents = true)
       if !entry.isDirectory
