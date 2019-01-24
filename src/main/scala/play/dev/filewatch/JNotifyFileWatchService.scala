@@ -141,7 +141,7 @@ private object JNotifyFileWatchService {
       entry <- zipFile.entries().asScala
       file = (destination / entry.getName).createIfNotExists(entry.isDirectory, createParents = true)
       if !entry.isDirectory
-    } zipFile.getInputStream(entry) > file.newOutputStream
+    } zipFile.getInputStream(entry) pipeTo file.newOutputStream
     destination
   }
 
