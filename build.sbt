@@ -20,7 +20,7 @@ lazy val `play-file-watch` = project
     // workaround for https://github.com/scala/scala-dev/issues/249
     scalacOptions in (Compile, doc) ++= (if (scalaBinaryVersion.value == "2.12") Seq("-no-java-comments") else Nil),
 
-    crossScalaVersions := Seq("2.11.12", "2.12.8"),
+    crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-M5"),
     libraryDependencies ++= Seq(
       "io.methvin" % "directory-watcher" % "0.8.1",
       "com.github.pathikrit" %% "better-files" % "3.7.0",

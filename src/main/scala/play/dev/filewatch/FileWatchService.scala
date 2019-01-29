@@ -28,7 +28,7 @@ trait FileWatchService {
    * @return A watcher
    */
   def watch(filesToWatch: JList[File], onChange: Callable[Void]): FileWatcher = {
-    val buffer: Seq[java.io.File] = filesToWatch.asScala
+    val buffer: Seq[java.io.File] = filesToWatch.asScala.toList
     val function: () => Unit = () => { onChange.call }
     watch(buffer, function)
   }
