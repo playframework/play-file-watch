@@ -20,10 +20,10 @@ lazy val `play-file-watch` = project
     // workaround for https://github.com/scala/scala-dev/issues/249
     scalacOptions in (Compile, doc) ++= (if (scalaBinaryVersion.value == "2.12") Seq("-no-java-comments") else Nil),
 
-    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8"),
+    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0-M5"),
     libraryDependencies ++= Seq(
       "io.methvin" % "directory-watcher" % "0.8.1",
-      "com.github.pathikrit" %% "better-files" % pickVersion(scalaBinaryVersion.value, default = "2.17.1", forScala210 = "2.17.0"),
+      "com.github.pathikrit" %% "better-files" % pickVersion(scalaBinaryVersion.value, default = "3.7.0", forScala210 = "2.17.0"),
       "org.specs2" %% "specs2-core" % pickVersion(scalaBinaryVersion.value, default = "4.3.5", forScala210 = "3.10.0") % Test,
 
       // jnotify dependency needs to be added explicitly in user's apps
