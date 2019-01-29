@@ -23,7 +23,7 @@ lazy val `play-file-watch` = project
     crossScalaVersions := Seq("2.11.12", "2.12.8"),
     libraryDependencies ++= Seq(
       "io.methvin" % "directory-watcher" % "0.8.1",
-      "com.github.pathikrit" %% "better-files" % "2.17.1",
+      "com.github.pathikrit" %% "better-files" % "3.7.0",
       "org.specs2" %% "specs2-core" % "4.3.5" % Test,
 
       // jnotify dependency needs to be added explicitly in user's apps
