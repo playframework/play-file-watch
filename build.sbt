@@ -29,7 +29,8 @@ lazy val `play-file-watch` = project
       // jnotify dependency needs to be added explicitly in user's apps
       "com.lightbend.play" % "jnotify" % "0.94-play-2" % Test
     ),
-    parallelExecution in Test := false
+    parallelExecution in Test := false,
+    mimaPreviousArtifacts := Set(organization.value %% name.value % "1.1.8"),
   )
 
 def pickVersion(scalaBinaryVersion: String, default: String, forScala210: String): String = scalaBinaryVersion match {
