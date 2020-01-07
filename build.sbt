@@ -41,7 +41,7 @@ lazy val `play-file-watch` = project
     libraryDependencies ++= Seq(
       "io.methvin" % "directory-watcher" % "0.9.6",
       "com.github.pathikrit" %% "better-files" % pickVersion(scalaBinaryVersion.value, default = "2.17.1", forScala210 = "2.17.0"),
-      "org.specs2" %% "specs2-core" % pickVersion(scalaBinaryVersion.value, default = "4.8.1", forScala210 = "3.10.0") % Test,
+      "org.specs2" %% "specs2-core" % pickVersion(scalaBinaryVersion.value, default = "4.8.2", forScala210 = "3.10.0") % Test,
 
       // jnotify dependency needs to be added explicitly in user's apps
       "com.lightbend.play" % "jnotify" % "0.94-play-2" % Test
