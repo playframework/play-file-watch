@@ -40,6 +40,9 @@ lazy val `play-file-watch` = project
     crossScalaVersions := Seq("2.10.7", "2.11.12", scala212),
     libraryDependencies ++= Seq(
       "io.methvin" % "directory-watcher" % "0.9.6",
+      // Explicit override of JNA for licensing issue with 5.3.1 in "directory-watcher" % "0.9.6"
+      // This override can be removed when https://github.com/gmethvin/directory-watcher/issues/46 is fixed
+      "net.java.dev.jna" % "jna" % "5.5.0",
       "com.github.pathikrit" %% "better-files" % pickVersion(scalaBinaryVersion.value, default = "2.17.1", forScala210 = "2.17.0"),
       "org.specs2" %% "specs2-core" % pickVersion(scalaBinaryVersion.value, default = "4.8.2", forScala210 = "3.10.0") % Test,
 
