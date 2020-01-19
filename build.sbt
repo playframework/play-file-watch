@@ -39,8 +39,8 @@ lazy val `play-file-watch` = project
     scalaVersion := scala212,
     crossScalaVersions := Seq("2.10.7", "2.11.12", scala212),
     libraryDependencies ++= Seq(
-      "io.methvin" % "directory-watcher" % "0.9.7",
-      "com.github.pathikrit" %% "better-files" % pickVersion(scalaBinaryVersion.value, default = "3.8.0", forScala210 = "2.17.0"),
+      "io.methvin" % "directory-watcher" % "0.9.9",
+      "com.github.pathikrit" %% "better-files" % pickVersion(scalaBinaryVersion.value, default = "2.17.1", forScala210 = "2.17.0"),
       "org.specs2" %% "specs2-core" % pickVersion(scalaBinaryVersion.value, default = "4.8.2", forScala210 = "3.10.0") % Test,
 
       // jnotify dependency needs to be added explicitly in user's apps
