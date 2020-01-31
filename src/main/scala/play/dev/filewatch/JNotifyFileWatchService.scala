@@ -103,6 +103,15 @@ private object JNotifyFileWatchService {
             fieldSysPath.setAccessible(true)
             fieldSysPath.set(null, null)
 
+            // Hack #2 to reinit java.library.path, history: play#10015
+            // giveth https://github.com/openjdk/jdk/commit/4b7bbaf5b001c17e3bcd8d8ec7e4cb2d66e795e5
+            // taketh https://github.com/openjdk/jdk/commit/c639682887a83b98469ad1378de6a0db84b87c9f
+            val nsmeCatcher = scala.util.control.Exception.catching(classOf[NoSuchMethodException])
+            nsmeCatcher.opt(classOf[ClassLoader].getDeclaredMethod("initLibraryPaths")).foreach { m =>
+              m.setAccessible(true)
+              m.invoke(null)
+            }
+
             // Create classloader just for jnotify
             val loader = new URLClassLoader(Array(jnotifyJarFile.toURI.toURL), null)
 
