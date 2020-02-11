@@ -56,7 +56,7 @@ private[filewatch] object GlobalStaticVar {
         throw new ClassCastException(s"Global static var $name is not an instance of ${ct.runtimeClass}, but is actually a ${Option(value).fold("null")(_.getClass.getName)}")
       }
     } catch {
-      case e: InstanceNotFoundException =>
+      case _: InstanceNotFoundException =>
         None
     }
   }
@@ -68,7 +68,7 @@ private[filewatch] object GlobalStaticVar {
     try {
       ManagementFactory.getPlatformMBeanServer.unregisterMBean(objectName(name))
     } catch {
-      case e: InstanceNotFoundException =>
+      case _: InstanceNotFoundException =>
     }
   }
 }

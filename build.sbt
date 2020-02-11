@@ -31,44 +31,42 @@ lazy val scalariformSettings = Seq(
 lazy val `play-file-watch` = project
   .in(file("."))
   .enablePlugins(PlayLibrary, PlayReleaseBase)
-  .settings(scalariformSettings: _*)
-  .settings(interplayOverrideSettings: _*)
   .settings(
-    // workaround for https://github.com/scala/scala-dev/issues/249
-    scalacOptions in (Compile, doc) ++= (if (scalaBinaryVersion.value == "2.12") Seq("-no-java-comments") else Nil),
+    scalariformSettings, interplayOverrideSettings,
     scalaVersion := scala212,
-    crossScalaVersions := Seq("2.10.7", "2.11.12", scala212),
     libraryDependencies ++= Seq(
       "io.methvin" % "directory-watcher" % "0.9.9",
-      "com.github.pathikrit" %% "better-files" % pickVersion(scalaBinaryVersion.value, default = "3.8.0", forScala210 = "2.17.0"),
-      "org.specs2" %% "specs2-core" % pickVersion(scalaBinaryVersion.value, default = "4.8.3", forScala210 = "3.10.0") % Test,
+      "com.github.pathikrit" %% "better-files" % "3.8.0",
+      "org.specs2" %% "specs2-core" % "4.8.3" % Test,
 
       // jnotify dependency needs to be added explicitly in user's apps
       "com.lightbend.play" % "jnotify" % "0.94-play-2" % Test
     ),
     parallelExecution in Test := false,
-    mimaPreviousArtifacts := Set(organization.value %% name.value % "1.1.8"),
+    mimaPreviousArtifacts := Set(organization.value %% name.value % "1.1.9"),
+    releaseProcess := {
+      import ReleaseTransformations._
+      Seq[ReleaseStep](
+        checkSnapshotDependencies,
+        runClean,
+        releaseStepCommandAndRemaining("+test"),
+        releaseStepCommandAndRemaining("+publishSigned"),
+        releaseStepCommand("sonatypeBundleRelease"),
+        pushChanges // <- this needs to be removed when releasing from tag
+      )
+    },
+    // workaround for https://github.com/scala/scala-dev/issues/249
+    scalacOptions in (Compile, doc) += "-no-java-comments",
+    scalacOptions ++= Seq(
+      "-deprecation",
+      "-encoding", "utf-8",
+      "-explaintypes",
+      "-feature",
+      "-unchecked",
+      "-Ywarn-dead-code",
+      "-Ywarn-unused",
+    ),
   )
-  .settings(
-    Seq(
-      releaseProcess := {
-        import ReleaseTransformations._
-        Seq[ReleaseStep](
-          checkSnapshotDependencies,
-          runClean,
-          releaseStepCommandAndRemaining("+test"),
-          releaseStepCommandAndRemaining("+publishSigned"),
-          releaseStepCommand("sonatypeBundleRelease"),
-          pushChanges // <- this needs to be removed when releasing from tag
-        )
-      }
-    )
-  )
-
-def pickVersion(scalaBinaryVersion: String, default: String, forScala210: String): String = scalaBinaryVersion match {
-  case "2.10" => forScala210
-  case _ => default
-}
 
 playBuildRepoName in ThisBuild := "play-file-watch"
 

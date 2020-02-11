@@ -10,10 +10,7 @@ env:
   - TRAVIS_JDK=8
   - TRAVIS_JDK=11
 
-scala:
-  - 2.12.10
-  - 2.11.12
-  - 2.10.7
+scala: 2.12.10
 
 script: sbt "++$TRAVIS_SCALA_VERSION" test publishLocal mimaPreviousArtifacts
 
