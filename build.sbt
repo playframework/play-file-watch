@@ -35,7 +35,7 @@ lazy val `play-file-watch` = project
     scalariformSettings, interplayOverrideSettings,
     scalaVersion := scala212,
     libraryDependencies ++= Seq(
-      "io.methvin" % "directory-watcher" % "0.9.9",
+      "io.methvin" % "directory-watcher" % "0.9.10",
       "com.github.pathikrit" %% "better-files" % "3.8.0",
       "org.specs2" %% "specs2-core" % "4.9.4" % Test,
 
