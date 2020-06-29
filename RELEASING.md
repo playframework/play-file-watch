@@ -1,6 +1,6 @@
 ## Releasing
 
-This is released from the `master` branch. Unless an older version needs patching, then it must be released from the maintenance branch, for instance `2.0.x` branch. If there is no maintenance branch for the release that needs patching, create it from the tag.
+This is released from the `master` branch (from version 1.1.13). Unless an older version needs patching, then it must be released from the maintenance branch, for instance `1.1.x` branch. If there is no maintenance branch for the release that needs patching, create it from the tag.
 
 ## Cutting the release
 
