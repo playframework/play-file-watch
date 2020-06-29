@@ -2,7 +2,8 @@ package play.dev.filewatch
 
 import java.io.File
 import java.util.concurrent.Callable
-import java.util.{ Locale, List => JList }
+import java.util.Locale
+import java.util.{ List => JList }
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -11,6 +12,7 @@ import scala.util.Try
  * A service that can watch files
  */
 trait FileWatchService {
+
   /**
    * Watch the given sequence of files or directories.
    *
@@ -28,8 +30,8 @@ trait FileWatchService {
    * @return A watcher
    */
   def watch(filesToWatch: JList[File], onChange: Callable[Void]): FileWatcher = {
-    val buffer: Seq[java.io.File] = filesToWatch.asScala
-    val function: () => Unit = () => { onChange.call }
+    val buffer: Seq[java.io.File] = filesToWatch.asScala.toIndexedSeq
+    val function: () => Unit      = () => { onChange.call }
     watch(buffer, function)
   }
 
@@ -47,14 +49,12 @@ trait FileWatcher {
 }
 
 object FileWatchService {
-  private[filewatch] sealed trait OS {
-
-  }
+  private[filewatch] sealed trait OS {}
   private[filewatch] object OS {
     case object Windows extends OS
-    case object Linux extends OS
-    case object Mac extends OS
-    case object Other extends OS
+    case object Linux   extends OS
+    case object Mac     extends OS
+    case object Other   extends OS
   }
   import OS._
 
@@ -62,32 +62,35 @@ object FileWatchService {
     sys.props.get("os.name").fold(Other: OS) { name =>
       name.toLowerCase(Locale.ENGLISH) match {
         case mac if mac.contains("darwin") || mac.contains("mac") => Mac
-        case windows if windows.contains("windows") => Windows
-        case linux if linux.contains("linux") => Linux
-        case _ => Other
+        case windows if windows.contains("windows")               => Windows
+        case linux if linux.contains("linux")                     => Linux
+        case _                                                    => Other
       }
     }
   }
 
-  def defaultWatchService(targetDirectory: File, pollDelayMillis: Int, logger: LoggerProxy): FileWatchService = new FileWatchService {
-    lazy val delegate = os match {
-      // If Windows or Linux, use JDK7 Watch Service (assume JDK7+)
-      case (Windows | Linux) => jdk7(logger)
-      // If mac OS, use the mac implementation
-      case Mac => try mac(logger) catch {
-        case e: Throwable =>
-          logger.warn("Error loading Mac OS X watch service: " + e.getMessage)
-          logger.trace(e)
-          polling(pollDelayMillis)
+  def defaultWatchService(targetDirectory: File, pollDelayMillis: Int, logger: LoggerProxy): FileWatchService =
+    new FileWatchService {
+      lazy val delegate = os match {
+        // If Windows or Linux, use JDK7 Watch Service (assume JDK7+)
+        case (Windows | Linux) => jdk7(logger)
+        // If mac OS, use the mac implementation
+        case Mac =>
+          try mac(logger)
+          catch {
+            case e: Throwable =>
+              logger.warn("Error loading Mac OS X watch service: " + e.getMessage)
+              logger.trace(e)
+              polling(pollDelayMillis)
+          }
+        // Fall back to polling watch service
+        case _ => polling(pollDelayMillis)
       }
-      // Fall back to polling watch service
-      case _ => polling(pollDelayMillis)
+
+      def watch(filesToWatch: Seq[File], onChange: () => Unit) = delegate.watch(filesToWatch, onChange)
+
+      override def toString = delegate.toString
     }
-
-    def watch(filesToWatch: Seq[File], onChange: () => Unit) = delegate.watch(filesToWatch, onChange)
-
-    override def toString = delegate.toString
-  }
 
   def jnotify(targetDirectory: File): FileWatchService = optional(JNotifyFileWatchService(targetDirectory))
 
@@ -97,7 +100,8 @@ object FileWatchService {
 
   def polling(pollDelayMillis: Int): FileWatchService = new PollingFileWatchService(pollDelayMillis)
 
-  def optional(watchService: Try[FileWatchService]): FileWatchService = new OptionalFileWatchServiceDelegate(watchService)
+  def optional(watchService: Try[FileWatchService]): FileWatchService =
+    new OptionalFileWatchServiceDelegate(watchService)
 
   def default(logger: LoggerProxy, isMac: Boolean): FileWatchService = new DefaultFileWatchService(logger, isMac)
 }
@@ -110,4 +114,3 @@ class OptionalFileWatchServiceDelegate(val watchService: Try[FileWatchService]) 
     watchService.map(ws => ws.watch(filesToWatch, onChange)).get
   }
 }
-

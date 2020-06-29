@@ -1,6 +1,3 @@
-import scalariform.formatter.preferences._
-import com.typesafe.sbt.SbtScalariform.autoImport._
-
 // Customise sbt-dynver's behaviour to make it work with tags which aren't v-prefixed
 dynverVTagPrefix in ThisBuild := false
 
@@ -15,33 +12,21 @@ Global / onLoad := (Global / onLoad).value.andThen { s =>
   s
 }
 
-lazy val scalariformSettings = Seq(
-  scalariformAutoformat := true,
-  scalariformPreferences := scalariformPreferences.value
-    .setPreference(SpacesAroundMultiImports, true)
-    .setPreference(SpaceInsideParentheses, false)
-    .setPreference(DanglingCloseParenthesis, Preserve)
-    .setPreference(PreserveSpaceBeforeArguments, true)
-    .setPreference(DoubleIndentConstructorArguments, true)
-)
-
 lazy val `play-file-watch` = project
   .in(file("."))
   .enablePlugins(Common, Publish)
   .settings(
-    scalariformSettings,
     libraryDependencies ++= Seq(
-      "io.methvin" % "directory-watcher" % "0.9.10",
-      "com.github.pathikrit" %% "better-files" % "3.9.1",
-      "org.specs2" %% "specs2-core" % "4.10.0" % Test,
-
+      "io.methvin"            % "directory-watcher" % "0.9.10",
+      "com.github.pathikrit" %% "better-files"      % "3.9.1",
+      "org.specs2"           %% "specs2-core"       % "4.10.0" % Test,
       // jnotify dependency needs to be added explicitly in user's apps
       "com.lightbend.play" % "jnotify" % "0.94-play-2" % Test
     ),
     parallelExecution in Test := false,
     mimaPreviousArtifacts := Set(
       organization.value %% name.value % "1.1.12"
-        // this didn't pick the 1.1.12 tag:
-        // previousStableVersion.value.getOrElse(throw new Error("Unable to determine previous version"))
+      // this didn't pick the 1.1.12 tag:
+      // previousStableVersion.value.getOrElse(throw new Error("Unable to determine previous version"))
     )
   )

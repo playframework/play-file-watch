@@ -28,14 +28,15 @@ private[filewatch] object GlobalStaticVar {
 
     // Now we construct a MBean that exposes the AtomicReference.get method
     val getMethod = classOf[AtomicReference[_]].getMethod("get")
-    val getInfo = new ModelMBeanOperationInfo("The value", getMethod)
+    val getInfo   = new ModelMBeanOperationInfo("The value", getMethod)
     val mmbi = new ModelMBeanInfoSupport(
       "GlobalStaticVar",
       "A global static variable",
-      null, // no attributes
-      null, // no constructors
+      null,           // no attributes
+      null,           // no constructors
       Array(getInfo), // the operation
-      null); // no notifications
+      null
+    ); // no notifications
 
     val mmb = new RequiredModelMBean(mmbi)
     mmb.setManagedResource(reference, "ObjectReference")
@@ -53,7 +54,10 @@ private[filewatch] object GlobalStaticVar {
       if (ct.runtimeClass.isInstance(value)) {
         Some(value.asInstanceOf[T])
       } else {
-        throw new ClassCastException(s"Global static var $name is not an instance of ${ct.runtimeClass}, but is actually a ${Option(value).fold("null")(_.getClass.getName)}")
+        throw new ClassCastException(
+          s"Global static var $name is not an instance of ${ct.runtimeClass}, but is actually a ${Option(value)
+            .fold("null")(_.getClass.getName)}"
+        )
       }
     } catch {
       case _: InstanceNotFoundException =>

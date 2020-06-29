@@ -15,18 +15,20 @@ class PollingFileWatchService(val pollDelayMillis: Int) extends FileWatchService
 
     @volatile var stopped = false
 
-    val thread = new Thread(new Runnable {
-      def run() = {
-        var state = WatchState.empty
-        while (!stopped) {
-          val (triggered, newState) = SourceModificationWatch.watch(
-            () => filesToWatch.iterator.flatMap(_.toScala.listRecursively),
-            pollDelayMillis, state)(stopped)
-          if (triggered) onChange()
-          state = newState
+    val thread = new Thread(
+      new Runnable {
+        def run() = {
+          var state = WatchState.empty
+          while (!stopped) {
+            val (triggered, newState) = SourceModificationWatch
+              .watch(() => filesToWatch.iterator.flatMap(_.toScala.listRecursively), pollDelayMillis, state)(stopped)
+            if (triggered) onChange()
+            state = newState
+          }
         }
-      }
-    }, "play-watch-service")
+      },
+      "play-watch-service"
+    )
     thread.setDaemon(true)
     thread.start()
 
@@ -49,43 +51,49 @@ object SourceModificationWatch {
     else 0L
   }
 
-  @tailrec def watch(sourcesFinder: PathFinder, pollDelayMillis: Int, state: WatchState)(terminationCondition: => Boolean): (Boolean, WatchState) =
-    {
-      import state._
+  @tailrec def watch(sourcesFinder: PathFinder, pollDelayMillis: Int, state: WatchState)(
+      terminationCondition: => Boolean
+  ): (Boolean, WatchState) = {
+    import state._
 
-      val filesToWatch = listFiles(sourcesFinder)
+    val filesToWatch = listFiles(sourcesFinder)
 
-      val sourceFilesPath: Set[String] = filesToWatch.map(_.toJava.getCanonicalPath)
-      val lastModifiedTime = findLastModifiedTime(filesToWatch)
+    val sourceFilesPath: Set[String] = filesToWatch.map(_.toJava.getCanonicalPath)
+    val lastModifiedTime             = findLastModifiedTime(filesToWatch)
 
-      val sourcesModified =
-        lastModifiedTime > lastCallbackCallTime ||
-          previousFiles != sourceFilesPath
+    val sourcesModified =
+      lastModifiedTime > lastCallbackCallTime ||
+        previousFiles != sourceFilesPath
 
-      val (triggered, newCallbackCallTime) =
-        if (sourcesModified)
-          (false, System.currentTimeMillis)
-        else
-          (awaitingQuietPeriod, lastCallbackCallTime)
+    val (triggered, newCallbackCallTime) =
+      if (sourcesModified)
+        (false, System.currentTimeMillis)
+      else
+        (awaitingQuietPeriod, lastCallbackCallTime)
 
-      val newState = new WatchState(newCallbackCallTime, sourceFilesPath, sourcesModified, if (triggered) count + 1 else count)
-      if (triggered)
-        (true, newState)
-      else {
-        Thread.sleep(pollDelayMillis)
-        if (terminationCondition)
-          (false, newState)
-        else
-          watch(sourcesFinder, pollDelayMillis, newState)(terminationCondition)
-      }
+    val newState =
+      new WatchState(newCallbackCallTime, sourceFilesPath, sourcesModified, if (triggered) count + 1 else count)
+    if (triggered)
+      (true, newState)
+    else {
+      Thread.sleep(pollDelayMillis)
+      if (terminationCondition)
+        (false, newState)
+      else
+        watch(sourcesFinder, pollDelayMillis, newState)(terminationCondition)
     }
+  }
 }
 
-final class WatchState(val lastCallbackCallTime: Long, val previousFiles: Set[String], val awaitingQuietPeriod: Boolean, val count: Int) {
+final class WatchState(
+    val lastCallbackCallTime: Long,
+    val previousFiles: Set[String],
+    val awaitingQuietPeriod: Boolean,
+    val count: Int
+) {
   def previousFileCount: Int = previousFiles.size
 }
 
 object WatchState {
   def empty = new WatchState(0L, Set.empty[String], false, 0)
 }
-

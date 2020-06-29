@@ -11,7 +11,7 @@ jobs:
   include:
     - stage: test
       name: "Validations"
-      script: sbt mimaReportBinaryIssues
+      script: sbt scalafmtCheckAll scalafmtSbtCheck mimaReportBinaryIssues
       env:
         - TRAVIS_JDK=11
 

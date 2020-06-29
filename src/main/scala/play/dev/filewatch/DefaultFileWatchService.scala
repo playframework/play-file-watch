@@ -3,7 +3,9 @@ package play.dev.filewatch
 import java.io.File
 import java.nio.file.FileSystems
 
-import io.methvin.watcher.{ DirectoryChangeEvent, DirectoryChangeListener, DirectoryWatcher }
+import io.methvin.watcher.DirectoryChangeEvent
+import io.methvin.watcher.DirectoryChangeListener
+import io.methvin.watcher.DirectoryWatcher
 import io.methvin.watchservice.MacOSXListeningWatchService
 
 import scala.collection.JavaConverters._
@@ -30,7 +32,8 @@ class DefaultFileWatchService(logger: LoggerProxy, isMac: Boolean) extends FileW
 
     val watchService = if (isMac) new MacOSXListeningWatchService() else FileSystems.getDefault.newWatchService()
     val directoryWatcher =
-      DirectoryWatcher.builder()
+      DirectoryWatcher
+        .builder()
         .paths(dirsToWatch.map(_.toPath).asJava)
         .listener(new DirectoryChangeListener {
           override def onEvent(event: DirectoryChangeEvent): Unit = onChange()
@@ -38,15 +41,18 @@ class DefaultFileWatchService(logger: LoggerProxy, isMac: Boolean) extends FileW
         .watchService(watchService)
         .build()
 
-    val thread = new Thread(new Runnable {
-      override def run(): Unit = {
-        try {
-          directoryWatcher.watch()
-        } catch {
-          case NonFatal(_) => // Do nothing, this means the watch service has been closed, or we've been interrupted.
+    val thread = new Thread(
+      new Runnable {
+        override def run(): Unit = {
+          try {
+            directoryWatcher.watch()
+          } catch {
+            case NonFatal(_) => // Do nothing, this means the watch service has been closed, or we've been interrupted.
+          }
         }
-      }
-    }, "play-watch-service")
+      },
+      "play-watch-service"
+    )
     thread.setDaemon(true)
     thread.start()
 

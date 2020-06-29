@@ -9,7 +9,8 @@ import better.files.{ File => ScalaFile, _ }
 import scala.io.Codec
 import scala.util.Try
 
-private[play] class JNotifyFileWatchService(delegate: JNotifyFileWatchService.JNotifyDelegate) extends FileWatchService {
+private[play] class JNotifyFileWatchService(delegate: JNotifyFileWatchService.JNotifyDelegate)
+    extends FileWatchService {
   def watch(filesToWatch: Seq[File], onChange: () => Unit) = {
     val listener = delegate.newListener(onChange)
     val registeredIds = filesToWatch.map { file =>
@@ -23,19 +24,29 @@ private[play] class JNotifyFileWatchService(delegate: JNotifyFileWatchService.JN
 
 private object JNotifyFileWatchService {
 
-  import java.lang.reflect.{ InvocationHandler, Method, Proxy }
+  import java.lang.reflect.InvocationHandler
+  import java.lang.reflect.Method
+  import java.lang.reflect.Proxy
 
   /**
    * Captures all the reflection invocations in one place.
    */
-  class JNotifyDelegate(classLoader: ClassLoader, listenerClass: Class[_], addWatchMethod: Method, removeWatchMethod: Method) {
+  class JNotifyDelegate(
+      classLoader: ClassLoader,
+      listenerClass: Class[_],
+      addWatchMethod: Method,
+      removeWatchMethod: Method
+  ) {
     def addWatch(fileOrDirectory: String, listener: AnyRef): Int = {
-      addWatchMethod.invoke(
-        null,
-        fileOrDirectory, // The file or directory to watch
-        15: java.lang.Integer, // flags to say watch for all events
-        true: java.lang.Boolean, // Watch subtree
-        listener).asInstanceOf[Int]
+      addWatchMethod
+        .invoke(
+          null,
+          fileOrDirectory,         // The file or directory to watch
+          15: java.lang.Integer,   // flags to say watch for all events
+          true: java.lang.Boolean, // Watch subtree
+          listener
+        )
+        .asInstanceOf[Int]
     }
     def removeWatch(id: Int): Unit = {
       try {
@@ -49,12 +60,16 @@ private object JNotifyFileWatchService {
       }
     }
     def newListener(onChange: () => Unit): AnyRef = {
-      Proxy.newProxyInstance(classLoader, Seq(listenerClass).toArray, new InvocationHandler {
-        def invoke(proxy: AnyRef, m: Method, args: Array[AnyRef]): AnyRef = {
-          onChange()
-          null
+      Proxy.newProxyInstance(
+        classLoader,
+        Seq(listenerClass).toArray,
+        new InvocationHandler {
+          def invoke(proxy: AnyRef, m: Method, args: Array[AnyRef]): AnyRef = {
+            onChange()
+            null
+          }
         }
-      })
+      )
     }
 
     @throws[Throwable]("If we were not able to successfully load JNotify")
@@ -73,16 +88,17 @@ private object JNotifyFileWatchService {
         val ws = scala.util.control.Exception.allCatch.withTry {
 
           val classloader = GlobalStaticVar.get[ClassLoader]("FileWatchServiceJNotifyHack").getOrElse {
-            val jnotifyJarFile = this.getClass.getClassLoader.asInstanceOf[java.net.URLClassLoader].getURLs
+            val jnotifyJarFile = this.getClass.getClassLoader
+              .asInstanceOf[java.net.URLClassLoader]
+              .getURLs
               .map(_.getFile)
               .find(_.contains("/jnotify"))
               .map(new File(_))
-              .getOrElse(sys.error(
-                """Missing JNotify? To use JNotify you need to add the dependency:
-                  |libraryDependencies += "com.lightbend.play" % "jnotify" % "0.94-play-2"
-                  |""".stripMargin))
+              .getOrElse(sys.error("""Missing JNotify? To use JNotify you need to add the dependency:
+                                     |libraryDependencies += "com.lightbend.play" % "jnotify" % "0.94-play-2"
+                                     |""".stripMargin))
 
-            val jnotifyTarget = targetDirectory.toScala / "jnotify"
+            val jnotifyTarget            = targetDirectory.toScala / "jnotify"
             val nativeLibrariesDirectory = jnotifyTarget / "native_libraries"
 
             if (!nativeLibrariesDirectory.exists) {
@@ -90,15 +106,19 @@ private object JNotifyFileWatchService {
               unzipTo(jnotifyJarFile.toScala, jnotifyTarget)
             }
 
-            val libs = (nativeLibrariesDirectory / (System.getProperty("sun.arch.data.model") + "bits"))
-              .toJava.getAbsolutePath
+            val libs =
+              (nativeLibrariesDirectory / (System.getProperty("sun.arch.data.model") + "bits")).toJava.getAbsolutePath
 
             // Hack to set java.library.path
-            System.setProperty("java.library.path", {
-              Option(System.getProperty("java.library.path")).map { existing =>
-                existing + java.io.File.pathSeparator + libs
-              }.getOrElse(libs)
-            })
+            System.setProperty(
+              "java.library.path", {
+                Option(System.getProperty("java.library.path"))
+                  .map { existing =>
+                    existing + java.io.File.pathSeparator + libs
+                  }
+                  .getOrElse(libs)
+              }
+            )
             val fieldSysPath = classOf[ClassLoader].getDeclaredField("sys_paths")
             fieldSysPath.setAccessible(true)
             fieldSysPath.set(null, null)
@@ -120,9 +140,10 @@ private object JNotifyFileWatchService {
             loader
           }
 
-          val jnotifyClass = classloader.loadClass("net.contentobjects.jnotify.JNotify")
+          val jnotifyClass         = classloader.loadClass("net.contentobjects.jnotify.JNotify")
           val jnotifyListenerClass = classloader.loadClass("net.contentobjects.jnotify.JNotifyListener")
-          val addWatchMethod = jnotifyClass.getMethod("addWatch", classOf[String], classOf[Int], classOf[Boolean], jnotifyListenerClass)
+          val addWatchMethod =
+            jnotifyClass.getMethod("addWatch", classOf[String], classOf[Int], classOf[Boolean], jnotifyListenerClass)
           val removeWatchMethod = jnotifyClass.getMethod("removeWatch", classOf[Int])
 
           val d = new JNotifyDelegate(classloader, jnotifyListenerClass, addWatchMethod, removeWatchMethod)
@@ -147,10 +168,10 @@ private object JNotifyFileWatchService {
     import scala.collection.JavaConverters._
     for {
       zipFile <- new ZipFile(thisFile.toJava, codec.charSet).autoClosed
-      entry <- zipFile.entries().asScala
+      entry   <- zipFile.entries().asScala
       file = (destination / entry.getName).createIfNotExists(entry.isDirectory, createParents = true)
       if !entry.isDirectory
-    } zipFile.getInputStream(entry) pipeTo file.newOutputStream
+    } zipFile.getInputStream(entry).pipeTo(file.newOutputStream)
     destination
   }
 
