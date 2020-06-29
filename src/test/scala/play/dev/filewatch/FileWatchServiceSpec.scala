@@ -31,11 +31,11 @@ class PollingFileWatchServiceSpec extends FileWatchServiceSpec {
 
 object FileWatchServiceSpecLoggerProxy extends LoggerProxy {
   override def verbose(message: => String): Unit = ()
-  override def debug(message: => String): Unit = ()
-  override def info(message: => String): Unit = ()
-  override def warn(message: => String): Unit = ()
-  override def error(message: => String): Unit = ()
-  override def trace(t: => Throwable): Unit = ()
+  override def debug(message: => String): Unit   = ()
+  override def info(message: => String): Unit    = ()
+  override def warn(message: => String): Unit    = ()
+  override def error(message: => String): Unit   = ()
+  override def trace(t: => Throwable): Unit      = ()
   override def success(message: => String): Unit = ()
 }
 
@@ -55,8 +55,8 @@ abstract class FileWatchServiceSpec extends Specification {
   }
 
   @volatile var changed: Boolean = false
-  @volatile var startTime: Long = 0
-  @volatile var endTime: Long = 0
+  @volatile var startTime: Long  = 0
+  @volatile var endTime: Long    = 0
 
   private def reset(): Unit = {
     Thread.sleep(200)
