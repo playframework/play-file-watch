@@ -1,24 +1,50 @@
+version: ~> 1.0
 language: scala
 
-before_install: curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
+before_install: curl -Ls https://raw.githubusercontent.com/shyiko/jabba/0.11.2/install.sh | bash && . ~/.jabba/jabba.sh
 install: jabba install "adopt@~1.$TRAVIS_JDK.0-0" && jabba use "$_" && java -Xmx32m -version
 
 git:
   depth: false # Avoid sbt-dynver not seeing the tag
 
-env:
-  - TRAVIS_JDK=8
-  - TRAVIS_JDK=11
+jobs:
+  include:
+    - stage: test
+      name: "Validations"
+      script: sbt mimaReportBinaryIssues
+      env:
+        - TRAVIS_JDK=11
 
-scala: 2.12.10
+    - name: "Run tests on AdoptOpenJDK 11"
+      script: sbt +test
+      env:
+        - TRAVIS_JDK=11
 
-script: sbt "++$TRAVIS_SCALA_VERSION" test publishLocal mimaPreviousArtifacts
+    - name: "Run tests on AdoptOpenJDK 8"
+      script: sbt +test
+      env:
+        - TRAVIS_JDK=8
+
+    - stage: publish
+      name: "Publish artifacts to Bintray"
+      script: sbt +publish
+      env:
+        - TRAVIS_JDK=11
+        # encrypt with: travis encrypt --pro BINTRAY_USER=...
+        - secure: "tT0bg7NL5BQIgiqmVKtcRLY685fzVznSlb42E9BDtkkvMKIPa7KnwI/imX9WySDo2mpLXRHyLz3raBH+Gfflx2aWFIJG+3qMYUfEDHx+XBLtfAYb7xtPqAfrN0jATNABSu+9PNGrVQBSJf0nNPEpmRIooN1Uw79weBVS0RNq++idA1QgilTy0oEP1OHtQvspu2kZQ6PPPxwNNor4LW4ep2jneYaJVzVNWqfUYnSiSMZAHmSjgQFZJLfdsQxSqlKR1QvyH+M0H8mJt6ezJ4Dn33t+S/xqJsigLe4mX4wdz+2qhGzJxMjZygSsY3dT6a5I1z7RZzCJl4WJpq0JQeir/0B33E2McolOGPXbmClTphDov55Vcro2wUmw5RmhIpKaBFEH46iTi3saS3E7UlPqm19cophUtegBAyDsjafj/QGMs52CNt4Sn+jSOUQ4RUeWuAZEZZs//NRGoQOzgEO5SpQ7sRXD5WEeDLW+A27N5bXOzR80tqlJ9Y8DM8e9tFIV7oIHT1Sx88t7mUQb289zqEOHcRWCPo0Z0/JVulrbyXrUndcMiGwvhjZE4XSZb1GajfzcApZNv1RA4yrAoDdOqoLXgK0cccEIABP+8AXVOy/iJYRvbtsBG5+SeFFg/2/AL7r45YrcpXUD628n0zPdUeNkFukE8lpI0Owx7cnHfJg="
+        # encrypt with: travis encrypt --pro BINTRAY_PASS=...
+        - secure: "mbwRVzh074r1a1q/GSvRajk8lyxOAmIW1xpYG6zP7MO8Mf8m2aOsa2DFB2gc0D+yHg/KgAxgVfONAXHeCsXkuOO4zr53GVbu9ZuYqudnawMKab6ZZVbnopRzjFwRpk+cdLVmHAYXIchIG9/ApN5zUfl+elOZw6iNZ9EZ6ur1492s8z+MStvmY3Q6/EsndeFLgRBiorF8eoqmiu7jY+PlFUAOT4CRG2CmNdhlNTLpgtBIXhujt0NnWGArkPYIqe+l8GRYtExZKvLztbhDG6uqUKAoVs5BsQq9oGWOkL2vz/7YNlHTyDY/+rdFm/IBtaWTMdosPQfQOZh161bksCayfsdjloMR6Pj9mdcg4xehScEhr3MDQuzMnEvRlZiBqKh3qYJYbV7piq1elNSANx+KXC5HHHEgIuLqdi53t8NuzR0/6odZJQy8DZ/aLsyQ5+KbP6d6NwSjZUHQP7Xg1n+M36yzJEARqPa8NXQcNLvQkjXCG8nnQXQB4bCkNpGoc4bs8NHQ79pV1b3HcphkQvWdNLl2IU0pCulIQyZiLoNlQXw2BwI8Om3oxQ785PY2e9Rc3vXbOkyJh5cXsxp38uMFdrj60Eb+rXHQ1+5BVj4jtWUbO1Ag+UW6XdI6IqlS+GFw4HsC5jNLFF5378sAI3wwonYCTNQ0mZLacLBK3wV/25I="
+
+stages:
+  - name: test
+  - name: publish
+    if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
 
 cache:
   directories:
     - "$HOME/.cache/coursier"
     - "$HOME/.ivy2/cache"
-    - "$HOME/.jabba/jdk"
+    - "$HOME/.jabba"
     - "$HOME/.sbt"
 
 before_cache:
@@ -27,6 +53,7 @@ before_cache:
   - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
   - find $HOME/.sbt  -name "*.lock"               -delete
 
-notifications:
-  slack:
-    secure: JPXUQyHjF3FKac8EdQimLZA5B4iGGtMsslK9w+tjgcNbupbuqErAmLdlebJU7lOVaPYbk9DrKjaqx82248hVca++t5uhEuj1Qgijl3Fn3VdTyv94D+wQ0p/5iiNjTOF1TS5R8NnY6WHaXfMD/ibGnlZKHHjgGX3RyszHmg8YWVxD8+Y/0uE+q9LddPeeGWGEmWgfwHS8fI+5c3/f7cwv7r2wEkHpXOorZbDLlyjD7/b22GBw+8/rsIEEnURNOI7A58IDJHRG4JAkv+Y/vX4i7mPSWdD4/YD6shAy0Jgxk8tNV4WtU8Mq9cV3/Kd8P+hWAaSd6aAhsaj+kNq9C2ZrTDVDe02tcZ34j0g0oaPZQDXTLATHdo0qX9sf+k5EWm25swkhn4CotcqBZ8frDwfO07j9n3lj5lxLauaRzurwoNYaY6nuDjPzFwi1vA6VqYHUnR0z0k+rh7EPbmgZjqtLH8gdwbYqE96NTd1O0A6kngMJ1T6FhHhmNbK6uepAp94q96s41OoyBXMc9pFx8V9dksMzGvvm0n1Or+B7F38OKjX9CMsCh/tuv/wC1sTc6dKh7Eg+odfwEUM1DuGS3JU5qMRkXqvj6aOeoCp+tvU9ZGWA/iELiQKlX4tZ4kY5Onj4VgWjfaKsx3FpnLt3kBXFL2UUF/+scumV31USgTKSEnA=
+branches:
+  only:
+    - master
+    - /^\d+\.\d+(\.\d+)?(-\S*)?$/

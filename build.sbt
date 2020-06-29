@@ -1,9 +1,6 @@
 import scalariform.formatter.preferences._
 import com.typesafe.sbt.SbtScalariform.autoImport._
 
-import interplay.ScalaVersions._
-
-
 // Customise sbt-dynver's behaviour to make it work with tags which aren't v-prefixed
 dynverVTagPrefix in ThisBuild := false
 
@@ -30,10 +27,9 @@ lazy val scalariformSettings = Seq(
 
 lazy val `play-file-watch` = project
   .in(file("."))
-  .enablePlugins(PlayLibrary, PlayReleaseBase)
+  .enablePlugins(Common, Publish)
   .settings(
-    scalariformSettings, interplayOverrideSettings,
-    scalaVersion := scala212,
+    scalariformSettings,
     libraryDependencies ++= Seq(
       "io.methvin" % "directory-watcher" % "0.9.10",
       "com.github.pathikrit" %% "better-files" % "3.9.1",
@@ -43,34 +39,9 @@ lazy val `play-file-watch` = project
       "com.lightbend.play" % "jnotify" % "0.94-play-2" % Test
     ),
     parallelExecution in Test := false,
-    mimaPreviousArtifacts := Set(organization.value %% name.value % "1.1.9"),
-    releaseProcess := {
-      import ReleaseTransformations._
-      Seq[ReleaseStep](
-        checkSnapshotDependencies,
-        runClean,
-        releaseStepCommandAndRemaining("+test"),
-        releaseStepCommandAndRemaining("+publishSigned"),
-        releaseStepCommand("sonatypeBundleRelease"),
-        pushChanges // <- this needs to be removed when releasing from tag
-      )
-    },
-    // workaround for https://github.com/scala/scala-dev/issues/249
-    scalacOptions in (Compile, doc) += "-no-java-comments",
-    scalacOptions ++= Seq(
-      "-deprecation",
-      "-encoding", "utf-8",
-      "-explaintypes",
-      "-feature",
-      "-unchecked",
-      "-Ywarn-dead-code",
-      "-Ywarn-unused",
-    ),
+    mimaPreviousArtifacts := Set(
+      organization.value %% name.value % "1.1.12"
+        // this didn't pick the 1.1.12 tag:
+        // previousStableVersion.value.getOrElse(throw new Error("Unable to determine previous version"))
+    )
   )
-
-playBuildRepoName in ThisBuild := "play-file-watch"
-
-def interplayOverrideSettings: Seq[Setting[_]] = Seq(
-  organization := "com.lightbend.play",
-  sonatypeProfileName := "com.lightbend"
-)
