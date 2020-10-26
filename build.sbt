@@ -17,9 +17,9 @@ lazy val `play-file-watch` = project
   .enablePlugins(Common, Publish)
   .settings(
     libraryDependencies ++= Seq(
-      "io.methvin"            % "directory-watcher" % "0.10.0",
+      "io.methvin"            % "directory-watcher" % "0.10.1",
       "com.github.pathikrit" %% "better-files"      % "3.9.1",
-      "org.specs2"           %% "specs2-core"       % "4.10.3" % Test,
+      "org.specs2"           %% "specs2-core"       % "4.10.5" % Test,
       // jnotify dependency needs to be added explicitly in user's apps
       "com.lightbend.play" % "jnotify" % "0.94-play-2" % Test
     ),
