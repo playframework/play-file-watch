@@ -69,14 +69,19 @@ object FileWatchService {
     }
   }
 
-  def defaultWatchService(targetDirectory: File, pollDelayMillis: Int, logger: LoggerProxy): FileWatchService =
+  def defaultWatchService(
+      targetDirectory: File,
+      pollDelayMillis: Int,
+      logger: LoggerProxy,
+      disableFileHashCheck: Boolean
+  ): FileWatchService =
     new FileWatchService {
       lazy val delegate = os match {
         // If Windows or Linux, use JDK7 Watch Service (assume JDK7+)
-        case (Windows | Linux) => jdk7(logger)
+        case (Windows | Linux) => jdk7(logger, disableFileHashCheck)
         // If mac OS, use the mac implementation
         case Mac =>
-          try mac(logger)
+          try mac(logger, disableFileHashCheck)
           catch {
             case e: Throwable =>
               logger.warn("Error loading Mac OS X watch service: " + e.getMessage)
@@ -94,16 +99,19 @@ object FileWatchService {
 
   def jnotify(targetDirectory: File): FileWatchService = optional(JNotifyFileWatchService(targetDirectory))
 
-  def jdk7(logger: LoggerProxy): FileWatchService = default(logger, isMac = false)
+  def jdk7(logger: LoggerProxy, disableFileHashCheck: Boolean): FileWatchService =
+    default(logger, isMac = false, disableFileHashCheck)
 
-  def mac(logger: LoggerProxy): FileWatchService = default(logger, isMac = true)
+  def mac(logger: LoggerProxy, disableFileHashCheck: Boolean): FileWatchService =
+    default(logger, isMac = true, disableFileHashCheck)
 
   def polling(pollDelayMillis: Int): FileWatchService = new PollingFileWatchService(pollDelayMillis)
 
   def optional(watchService: Try[FileWatchService]): FileWatchService =
     new OptionalFileWatchServiceDelegate(watchService)
 
-  def default(logger: LoggerProxy, isMac: Boolean): FileWatchService = new DefaultFileWatchService(logger, isMac)
+  def default(logger: LoggerProxy, isMac: Boolean, disableFileHashCheck: Boolean): FileWatchService =
+    new DefaultFileWatchService(logger, isMac, disableFileHashCheck)
 }
 
 /**
