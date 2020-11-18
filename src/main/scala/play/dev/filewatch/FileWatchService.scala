@@ -73,7 +73,7 @@ object FileWatchService {
       targetDirectory: File,
       pollDelayMillis: Int,
       logger: LoggerProxy,
-      disableFileHashCheck: Boolean = false
+      disableFileHashCheck: Boolean
   ): FileWatchService =
     new FileWatchService {
       lazy val delegate = os match {
@@ -97,21 +97,31 @@ object FileWatchService {
       override def toString = delegate.toString
     }
 
+  def defaultWatchService(targetDirectory: File, pollDelayMillis: Int, logger: LoggerProxy): FileWatchService =
+    defaultWatchService(targetDirectory, pollDelayMillis, logger, disableFileHashCheck = false)
+
   def jnotify(targetDirectory: File): FileWatchService = optional(JNotifyFileWatchService(targetDirectory))
 
-  def jdk7(logger: LoggerProxy, disableFileHashCheck: Boolean = false): FileWatchService =
+  def jdk7(logger: LoggerProxy, disableFileHashCheck: Boolean): FileWatchService =
     default(logger, isMac = false, disableFileHashCheck)
 
-  def mac(logger: LoggerProxy, disableFileHashCheck: Boolean = false): FileWatchService =
+  def jdk7(logger: LoggerProxy): FileWatchService = jdk7(logger, disableFileHashCheck = false)
+
+  def mac(logger: LoggerProxy, disableFileHashCheck: Boolean): FileWatchService =
     default(logger, isMac = true, disableFileHashCheck)
+
+  def mac(logger: LoggerProxy): FileWatchService = mac(logger, disableFileHashCheck = false)
 
   def polling(pollDelayMillis: Int): FileWatchService = new PollingFileWatchService(pollDelayMillis)
 
   def optional(watchService: Try[FileWatchService]): FileWatchService =
     new OptionalFileWatchServiceDelegate(watchService)
 
-  def default(logger: LoggerProxy, isMac: Boolean, disableFileHashCheck: Boolean = false): FileWatchService =
+  def default(logger: LoggerProxy, isMac: Boolean, disableFileHashCheck: Boolean): FileWatchService =
     new DefaultFileWatchService(logger, isMac, disableFileHashCheck)
+
+  def default(logger: LoggerProxy, isMac: Boolean): FileWatchService =
+    default(logger, isMac, disableFileHashCheck = true)
 }
 
 /**
