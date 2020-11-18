@@ -15,7 +15,7 @@ import scala.util.control.NonFatal
  * Implementation of the file watch service that uses a native implementation for Mac and otherwise uses the JDK's
  * WatchService implementation.
  */
-class DefaultFileWatchService(logger: LoggerProxy, isMac: Boolean, disableFileHashCheck: Boolean)
+class DefaultFileWatchService(logger: LoggerProxy, isMac: Boolean, disableFileHashCheck: Boolean = false)
     extends FileWatchService {
 
   def this(logger: LoggerProxy) = this(logger, false, false)
