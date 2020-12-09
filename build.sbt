@@ -15,7 +15,6 @@ Global / onLoad := (Global / onLoad).value.andThen { s =>
 lazy val `play-file-watch` = project
   .in(file("."))
   .enablePlugins(Common, Publish)
-  .settings(interplayOverrideSettings: _*)
   .settings(
     // workaround for https://github.com/scala/scala-dev/issues/249
     scalacOptions in (Compile, doc) ++= (
@@ -24,8 +23,6 @@ lazy val `play-file-watch` = project
       else
         Nil
     ),
-    scalaVersion := "2.12.10",
-    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.10"),
     libraryDependencies ++= Seq(
       "io.methvin"            % "directory-watcher" % "0.10.1",
       "com.github.pathikrit" %% "better-files" % pickVersion(
@@ -43,7 +40,7 @@ lazy val `play-file-watch` = project
     ),
     parallelExecution in Test := false,
     mimaPreviousArtifacts := Set(
-      organization.value %% name.value % "1.1.12"
+      organization.value %% name.value % "1.1.13"
       // this didn't pick the 1.1.12 tag:
       // previousStableVersion.value.getOrElse(throw new Error("Unable to determine previous version"))
     )
@@ -53,7 +50,3 @@ def pickVersion(scalaBinaryVersion: String, default: String, forScala210: String
   case "2.10" => forScala210
   case _      => default
 }
-
-def interplayOverrideSettings: Seq[Setting[_]] = Seq(
-  organization := "com.lightbend.play",
-)
