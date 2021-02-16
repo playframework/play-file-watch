@@ -121,7 +121,7 @@ object FileWatchService {
     new DefaultFileWatchService(logger, isMac, disableFileHashCheck)
 
   def default(logger: LoggerProxy, isMac: Boolean): FileWatchService =
-    default(logger, isMac, disableFileHashCheck = true)
+    default(logger, isMac, disableFileHashCheck = false)
 }
 
 /**
