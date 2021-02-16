@@ -15,9 +15,11 @@ import scala.util.control.NonFatal
  * Implementation of the file watch service that uses a native implementation for Mac and otherwise uses the JDK's
  * WatchService implementation.
  */
-class DefaultFileWatchService(logger: LoggerProxy, isMac: Boolean) extends FileWatchService {
+class DefaultFileWatchService(logger: LoggerProxy, isMac: Boolean, disableFileHashCheck: Boolean)
+    extends FileWatchService {
 
-  def this(logger: LoggerProxy) = this(logger, false)
+  def this(logger: LoggerProxy) = this(logger, isMac = false, disableFileHashCheck = false)
+  def this(logger: LoggerProxy, isMac: Boolean) = this(logger, isMac, disableFileHashCheck = false)
 
   def watch(filesToWatch: Seq[File], onChange: () => Unit) = {
     val dirsToWatch = filesToWatch.filter { file =>
@@ -38,6 +40,7 @@ class DefaultFileWatchService(logger: LoggerProxy, isMac: Boolean) extends FileW
         .listener(new DirectoryChangeListener {
           override def onEvent(event: DirectoryChangeEvent): Unit = onChange()
         })
+        .fileHashing(!disableFileHashCheck)
         .watchService(watchService)
         .build()
 

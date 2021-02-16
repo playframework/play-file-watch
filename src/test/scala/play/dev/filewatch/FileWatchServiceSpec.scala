@@ -9,14 +9,32 @@ class JavaFileWatchServiceSpec extends FileWatchServiceSpec {
   // the mac impl consistently fails because it takes more than 5s so skip this one on mac
   args(skipAll = FileWatchService.os == FileWatchService.OS.Mac)
 
-  override def watchService: FileWatchService = FileWatchService.jdk7(FileWatchServiceSpecLoggerProxy)
+  override def watchService: FileWatchService =
+    FileWatchService.jdk7(FileWatchServiceSpecLoggerProxy, disableFileHashCheck = false)
+}
+
+class JavaFileWatchServiceHashCheckDisabledSpec extends FileWatchServiceSpec {
+  // the mac impl consistently fails because it takes more than 5s so skip this one on mac
+  args(skipAll = FileWatchService.os == FileWatchService.OS.Mac)
+
+  override def watchService: FileWatchService =
+    FileWatchService.jdk7(FileWatchServiceSpecLoggerProxy, disableFileHashCheck = true)
 }
 
 class MacFileWatchServiceSpec extends FileWatchServiceSpec {
   // this only works on mac
   args(skipAll = FileWatchService.os != FileWatchService.OS.Mac)
 
-  override def watchService: FileWatchService = FileWatchService.mac(FileWatchServiceSpecLoggerProxy)
+  override def watchService: FileWatchService =
+    FileWatchService.mac(FileWatchServiceSpecLoggerProxy, disableFileHashCheck = false)
+}
+
+class MacFileWatchServiceHashCheckDisabledSpec extends FileWatchServiceSpec {
+  // this only works on mac
+  args(skipAll = FileWatchService.os != FileWatchService.OS.Mac)
+
+  override def watchService: FileWatchService =
+    FileWatchService.mac(FileWatchServiceSpecLoggerProxy, disableFileHashCheck = true)
 }
 
 class JNotifyFileWatchServiceSpec extends FileWatchServiceSpec {
