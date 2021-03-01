@@ -100,8 +100,6 @@ object FileWatchService {
   def defaultWatchService(targetDirectory: File, pollDelayMillis: Int, logger: LoggerProxy): FileWatchService =
     defaultWatchService(targetDirectory, pollDelayMillis, logger, disableFileHashCheck = false)
 
-  def jnotify(targetDirectory: File): FileWatchService = optional(JNotifyFileWatchService(targetDirectory))
-
   def jdk7(logger: LoggerProxy, disableFileHashCheck: Boolean): FileWatchService =
     default(logger, isMac = false, disableFileHashCheck)
 
