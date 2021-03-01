@@ -1,3 +1,8 @@
+import com.typesafe.tools.mima.core.DirectMissingMethodProblem
+import com.typesafe.tools.mima.core.MissingClassProblem
+import com.typesafe.tools.mima.core.ProblemFilters
+import com.typesafe.tools.mima.plugin.MimaKeys.mimaBinaryIssueFilters
+
 // Customise sbt-dynver's behaviour to make it work with tags which aren't v-prefixed
 dynverVTagPrefix in ThisBuild := false
 
@@ -34,15 +39,20 @@ lazy val `play-file-watch` = project
         scalaBinaryVersion.value,
         default = "4.8.3",
         forScala210 = "3.10.0"
-      ) % Test,
-      // jnotify dependency needs to be added explicitly in user's apps
-      "com.lightbend.play" % "jnotify" % "0.94-play-2" % Test
+      ) % Test
     ),
     parallelExecution in Test := false,
     mimaPreviousArtifacts := Set(
       organization.value %% name.value % "1.1.13"
       // this didn't pick the 1.1.12 tag:
       // previousStableVersion.value.getOrElse(throw new Error("Unable to determine previous version"))
+    ),
+    mimaBinaryIssueFilters ++= Seq(
+      // Remove JNotify
+      ProblemFilters.exclude[DirectMissingMethodProblem]("play.dev.filewatch.FileWatchService.jnotify"),
+      ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.JNotifyFileWatchService"),
+      ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.JNotifyFileWatchService$"),
+      ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.JNotifyFileWatchService$JNotifyDelegate"),
     )
   )
 

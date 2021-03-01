@@ -37,12 +37,6 @@ class MacFileWatchServiceHashCheckDisabledSpec extends FileWatchServiceSpec {
     FileWatchService.mac(FileWatchServiceSpecLoggerProxy, disableFileHashCheck = true)
 }
 
-class JNotifyFileWatchServiceSpec extends FileWatchServiceSpec {
-  private val jnotifyDir = File("./target/jnotify").createIfNotExists(asDirectory = true)
-
-  override def watchService: FileWatchService = FileWatchService.jnotify(jnotifyDir.toJava)
-}
-
 class PollingFileWatchServiceSpec extends FileWatchServiceSpec {
   override def watchService: FileWatchService = FileWatchService.polling(200)
 }
