@@ -24,7 +24,7 @@ lazy val `play-file-watch` = project
         Nil
     ),
     libraryDependencies ++= Seq(
-      "io.methvin"            % "directory-watcher" % "0.14.0",
+      "io.methvin"            % "directory-watcher" % "0.15.0",
       "com.github.pathikrit" %% "better-files" % pickVersion(
         scalaBinaryVersion.value,
         default = "3.8.0",
