@@ -19,7 +19,7 @@ Global / onLoad := (Global / onLoad).value.andThen { s =>
 
 lazy val `play-file-watch` = project
   .in(file("."))
-  .enablePlugins(Common, Publish)
+  .enablePlugins(Common)
   .settings(
     // workaround for https://github.com/scala/scala-dev/issues/249
     scalacOptions in (Compile, doc) ++= (
