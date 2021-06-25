@@ -2,8 +2,14 @@ version: ~> 1.0
 language: scala
 
 before_install:
-  - if [ ! -f ~/.jabba/jabba.sh ]; then curl -L -v --retry 5 -o jabba-install.sh https://raw.githubusercontent.com/shyiko/jabba/0.11.2/install.sh && bash jabba-install.sh; fi
-  - . ~/.jabba/jabba.sh
+  - curl -Ls https://raw.githubusercontent.com/shyiko/jabba/0.11.2/install.sh | JABBA_VERSION=0.11.2 bash && . ~/.jabba/jabba.sh
+  # Travis-CI has (as of March 2021, anyway) an outdated sbt-extras version,
+  # so overwrite it with a March 2021 version that works with sbt 1.4.8+
+  - |
+    curl -sL https://raw.githubusercontent.com/paulp/sbt-extras/dc4f350f112580fcdf5f6fa7e8d5d2116475f84a/sbt  > /tmp/sbt-launch-script || travis_terminate 1
+    chmod +x /tmp/sbt-launch-script || travis_terminate 1
+    sudo mv /tmp/sbt-launch-script /usr/local/bin/sbt || travis_terminate 1
+
 install: jabba install "adopt@~1.$TRAVIS_JDK.0-0" && jabba use "$_" && java -Xmx32m -version
 
 git:
@@ -27,15 +33,12 @@ jobs:
       env:
         - TRAVIS_JDK=8
 
-    - stage: publish
-      name: "Publish artifacts to Bintray"
-      script: sbt +publish
-      env:
-        - TRAVIS_JDK=11
-        # encrypt with: travis encrypt --pro BINTRAY_USER=...
-        - secure: "tT0bg7NL5BQIgiqmVKtcRLY685fzVznSlb42E9BDtkkvMKIPa7KnwI/imX9WySDo2mpLXRHyLz3raBH+Gfflx2aWFIJG+3qMYUfEDHx+XBLtfAYb7xtPqAfrN0jATNABSu+9PNGrVQBSJf0nNPEpmRIooN1Uw79weBVS0RNq++idA1QgilTy0oEP1OHtQvspu2kZQ6PPPxwNNor4LW4ep2jneYaJVzVNWqfUYnSiSMZAHmSjgQFZJLfdsQxSqlKR1QvyH+M0H8mJt6ezJ4Dn33t+S/xqJsigLe4mX4wdz+2qhGzJxMjZygSsY3dT6a5I1z7RZzCJl4WJpq0JQeir/0B33E2McolOGPXbmClTphDov55Vcro2wUmw5RmhIpKaBFEH46iTi3saS3E7UlPqm19cophUtegBAyDsjafj/QGMs52CNt4Sn+jSOUQ4RUeWuAZEZZs//NRGoQOzgEO5SpQ7sRXD5WEeDLW+A27N5bXOzR80tqlJ9Y8DM8e9tFIV7oIHT1Sx88t7mUQb289zqEOHcRWCPo0Z0/JVulrbyXrUndcMiGwvhjZE4XSZb1GajfzcApZNv1RA4yrAoDdOqoLXgK0cccEIABP+8AXVOy/iJYRvbtsBG5+SeFFg/2/AL7r45YrcpXUD628n0zPdUeNkFukE8lpI0Owx7cnHfJg="
-        # encrypt with: travis encrypt --pro BINTRAY_PASS=...
-        - secure: "mbwRVzh074r1a1q/GSvRajk8lyxOAmIW1xpYG6zP7MO8Mf8m2aOsa2DFB2gc0D+yHg/KgAxgVfONAXHeCsXkuOO4zr53GVbu9ZuYqudnawMKab6ZZVbnopRzjFwRpk+cdLVmHAYXIchIG9/ApN5zUfl+elOZw6iNZ9EZ6ur1492s8z+MStvmY3Q6/EsndeFLgRBiorF8eoqmiu7jY+PlFUAOT4CRG2CmNdhlNTLpgtBIXhujt0NnWGArkPYIqe+l8GRYtExZKvLztbhDG6uqUKAoVs5BsQq9oGWOkL2vz/7YNlHTyDY/+rdFm/IBtaWTMdosPQfQOZh161bksCayfsdjloMR6Pj9mdcg4xehScEhr3MDQuzMnEvRlZiBqKh3qYJYbV7piq1elNSANx+KXC5HHHEgIuLqdi53t8NuzR0/6odZJQy8DZ/aLsyQ5+KbP6d6NwSjZUHQP7Xg1n+M36yzJEARqPa8NXQcNLvQkjXCG8nnQXQB4bCkNpGoc4bs8NHQ79pV1b3HcphkQvWdNLl2IU0pCulIQyZiLoNlQXw2BwI8Om3oxQ785PY2e9Rc3vXbOkyJh5cXsxp38uMFdrj60Eb+rXHQ1+5BVj4jtWUbO1Ag+UW6XdI6IqlS+GFw4HsC5jNLFF5378sAI3wwonYCTNQ0mZLacLBK3wV/25I="
+# TODO replace with Sonatype
+#    - stage: publish
+#      name: "Publish artifacts to Bintray"
+#      script: sbt +publish
+#      env:
+#        - TRAVIS_JDK=11
 
 stages:
   - name: test

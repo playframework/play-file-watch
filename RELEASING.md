@@ -9,12 +9,7 @@ This is released from the `master` branch (from version 1.1.13). Unless an older
 - Check the [draft release notes](https://github.com/playframework/play-file-watch/releases) to see if everything is there
 - Wait until [master build finished](https://travis-ci.com/github/playframework/play-file-watch/builds) after merging the last PR
 - Update the [draft release](https://github.com/playframework/play-file-watch/releases) with the next tag version (eg. `2.2.0`), title and release description
-- Check that Travis CI release build has executed successfully (Travis will start a [CI build](https://travis-ci.com/github/playframework/play-file-watch/builds) for the new tag and publish artifacts to Bintray)
-
-### Requires Bintray access
-
-- Go to [Bintray](https://bintray.com/playframework/maven/play-file-watch) and select the just released version
-- Go to the Maven Central tab and sync with Sonatype (using your Sonatype TOKEN key and password) (you may watch progress in the [Staging repository](https://oss.sonatype.org/#stagingRepositories))
+- Check that Travis CI release build has executed successfully (Travis will start a [CI build](https://travis-ci.com/github/playframework/play-file-watch/builds) for the new tag and publish artifacts to Sonatype)
 
 ### Check Maven Central
 
