@@ -4,7 +4,7 @@ import com.typesafe.tools.mima.core.ProblemFilters
 import com.typesafe.tools.mima.plugin.MimaKeys.mimaBinaryIssueFilters
 
 // Customise sbt-dynver's behaviour to make it work with tags which aren't v-prefixed
-dynverVTagPrefix in ThisBuild := false
+ThisBuild / dynverVTagPrefix := false
 
 // Sanity-check: assert that version comes from a tag (e.g. not a too-shallow clone)
 // https://github.com/dwijnand/sbt-dynver/#sanity-checking-the-version
@@ -22,7 +22,7 @@ lazy val `play-file-watch` = project
   .enablePlugins(Common)
   .settings(
     // workaround for https://github.com/scala/scala-dev/issues/249
-    scalacOptions in (Compile, doc) ++= (
+    Compile / doc / scalacOptions ++= (
       if (scalaBinaryVersion.value == "2.12")
         Seq("-no-java-comments", "-Ywarn-unused:imports", "-Xlint:nullary-unit")
       else
@@ -41,7 +41,7 @@ lazy val `play-file-watch` = project
         forScala210 = "3.10.0"
       ) % Test
     ),
-    parallelExecution in Test := false,
+    Test / parallelExecution := false,
     mimaPreviousArtifacts := Set(
       organization.value %% name.value % "1.1.13"
       // this didn't pick the 1.1.12 tag:
