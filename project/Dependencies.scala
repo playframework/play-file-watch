@@ -9,7 +9,7 @@ object Dependencies {
   val Scala211 = "2.11.12"
   val Scala212 = "2.12.14"
   val Scala213 = "2.13.6"
-  val Scala3   = "3.0.2-RC1"
+  val Scala3   = "3.0.2"
 
   val ScalaVersions = Seq(Scala210, Scala211, Scala212, Scala213, Scala3)
 }
