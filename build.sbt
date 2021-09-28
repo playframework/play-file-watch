@@ -1,4 +1,5 @@
 import com.typesafe.tools.mima.core.DirectMissingMethodProblem
+
 import com.typesafe.tools.mima.core.MissingClassProblem
 import com.typesafe.tools.mima.core.ProblemFilters
 import com.typesafe.tools.mima.plugin.MimaKeys.mimaBinaryIssueFilters
