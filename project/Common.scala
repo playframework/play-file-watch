@@ -1,4 +1,5 @@
 import Dependencies._
+
 import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
@@ -33,13 +34,13 @@ object Common extends AutoPlugin {
 
   override def globalSettings =
     Seq(
-      organization := "com.lightbend.play",
-      organizationName := "Lightbend Inc.",
+      organization         := "com.lightbend.play",
+      organizationName     := "Lightbend Inc.",
       organizationHomepage := Some(url("https://www.lightbend.com/")),
-      homepage := Some(url(s"https://github.com/playframework/${repoName}")),
-      licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.html")),
-      scalaVersion := Scala212,
-      crossScalaVersions := ScalaVersions,
+      homepage             := Some(url(s"https://github.com/playframework/${repoName}")),
+      licenses             := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.html")),
+      scalaVersion         := Scala212,
+      crossScalaVersions   := ScalaVersions,
       scalacOptions ++= scalacParameters,
       javacOptions ++= javacParameters,
       scmInfo := Some(
