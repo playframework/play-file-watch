@@ -16,18 +16,24 @@ trait FileWatchService {
   /**
    * Watch the given sequence of files or directories.
    *
-   * @param filesToWatch The files to watch.
-   * @param onChange A callback that is executed whenever something changes.
-   * @return A watcher
+   * @param filesToWatch
+   *   The files to watch.
+   * @param onChange
+   *   A callback that is executed whenever something changes.
+   * @return
+   *   A watcher
    */
   def watch(filesToWatch: Seq[File], onChange: () => Unit): FileWatcher
 
   /**
    * Watch the given sequence of files or directories.
    *
-   * @param filesToWatch The files to watch.
-   * @param onChange A callback that is executed whenever something changes.
-   * @return A watcher
+   * @param filesToWatch
+   *   The files to watch.
+   * @param onChange
+   *   A callback that is executed whenever something changes.
+   * @return
+   *   A watcher
    */
   def watch(filesToWatch: JList[File], onChange: Callable[Void]): FileWatcher = {
     val buffer: Seq[java.io.File] = filesToWatch.asScala.toIndexedSeq

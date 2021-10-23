@@ -5,8 +5,8 @@ import scala.reflect.ClassTag
 /**
  * Provides a global (cross classloader) static var.
  *
- * This does not leak classloaders (unless the value passed to it references a classloader that shouldn't be leaked).
- * It uses an MBeanServer to store an AtomicReference as an mbean, exposing the get method of the AtomicReference as an
+ * This does not leak classloaders (unless the value passed to it references a classloader that shouldn't be leaked). It
+ * uses an MBeanServer to store an AtomicReference as an mbean, exposing the get method of the AtomicReference as an
  * mbean operation, so that the value can be retrieved.
  */
 private[filewatch] object GlobalStaticVar {
