@@ -56,7 +56,7 @@ private[filewatch] object GlobalStaticVar {
       } else {
         throw new ClassCastException(
           s"Global static var $name is not an instance of ${ct.runtimeClass}, but is actually a ${Option(value)
-            .fold("null")(_.getClass.getName)}"
+              .fold("null")(_.getClass.getName)}"
         )
       }
     } catch {
