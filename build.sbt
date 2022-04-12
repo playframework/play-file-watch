@@ -36,11 +36,14 @@ lazy val `play-file-watch` = project
         default = "3.8.0",
         forScala210 = "2.17.0"
       )).cross(CrossVersion.for3Use2_13),
-      ("org.specs2" %% "specs2-core" % pickVersion(
-        scalaBinaryVersion.value,
-        default = "4.8.3",
-        forScala210 = "3.10.0"
-      ) % Test).cross(CrossVersion.for3Use2_13)
+      scalaBinaryVersion.value match {
+        case "2.10" =>
+          "org.specs2" %% "specs2-core" % "3.10.0" % Test
+        case "2.11" =>
+          "org.specs2" %% "specs2-core" % "4.10.6" % Test
+        case _ =>
+          "org.specs2" %% "specs2-core" % "4.15.0" % Test
+      }
     ),
     Test / parallelExecution := false,
     mimaPreviousArtifacts := Set(
