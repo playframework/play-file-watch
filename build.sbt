@@ -42,11 +42,15 @@ lazy val `play-file-watch` = project
       }
     ),
     Test / parallelExecution := false,
-    mimaPreviousArtifacts := Set(
-      organization.value %% name.value % "1.1.13"
-      // this didn't pick the 1.1.12 tag:
-      // previousStableVersion.value.getOrElse(throw new Error("Unable to determine previous version"))
-    ),
+    mimaPreviousArtifacts := {
+      if (scalaBinaryVersion.value == "2.10" || scalaBinaryVersion.value == "3")
+        Set.empty
+      else
+        Set(
+          organization.value %% name.value % previousStableVersion.value
+            .getOrElse(throw new Error("Unable to determine previous version"))
+        )
+    },
     mimaBinaryIssueFilters ++= Seq(
       // Remove JNotify
       ProblemFilters.exclude[DirectMissingMethodProblem]("play.dev.filewatch.FileWatchService.jnotify"),
@@ -60,3 +64,11 @@ def pickVersion(scalaBinaryVersion: String, default: String, forScala210: String
   case "2.10" => forScala210
   case _      => default
 }
+
+addCommandAlias(
+  "validateCode",
+  List(
+    "scalafmtSbtCheck",
+    "scalafmtCheckAll",
+  ).mkString(";")
+)
