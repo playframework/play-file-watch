@@ -34,7 +34,7 @@ object Common extends AutoPlugin {
 
   override def globalSettings =
     Seq(
-      organization         := "com.lightbend.play",
+      organization         := "com.typesafe.play",
       organizationName     := "Lightbend Inc.",
       organizationHomepage := Some(url("https://www.lightbend.com/")),
       homepage             := Some(url(s"https://github.com/playframework/${repoName}")),

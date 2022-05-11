@@ -29,7 +29,7 @@ lazy val `play-file-watch` = project
       "io.methvin"             % "directory-watcher" % "0.15.1",
       ("com.github.pathikrit" %% "better-files" % pickVersion(
         scalaBinaryVersion.value,
-        default = "3.8.0",
+        default = "3.9.1",
         forScala210 = "2.17.0"
       )).cross(CrossVersion.for3Use2_13),
       scalaBinaryVersion.value match {
@@ -47,7 +47,8 @@ lazy val `play-file-watch` = project
         Set.empty
       else
         Set(
-          organization.value %% name.value % previousStableVersion.value
+          // TODO: Change org to organization.value later, see https://github.com/playframework/play-file-watch/pull/169
+          "com.lightbend.play" %% name.value % previousStableVersion.value
             .getOrElse(throw new Error("Unable to determine previous version"))
         )
     },
