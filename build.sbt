@@ -47,7 +47,8 @@ lazy val `play-file-watch` = project
         Set.empty
       else
         Set(
-          organization.value %% name.value % previousStableVersion.value
+          // TODO: Change org to organization.value later, see https://github.com/playframework/play-file-watch/pull/169
+          "com.lightbend.play" %% name.value % previousStableVersion.value
             .getOrElse(throw new Error("Unable to determine previous version"))
         )
     },
