@@ -1,4 +1,5 @@
 target
+.bsp/
 
 # ScalaIDE
 .cache-main

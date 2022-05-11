@@ -60,3 +60,11 @@ def pickVersion(scalaBinaryVersion: String, default: String, forScala210: String
   case "2.10" => forScala210
   case _      => default
 }
+
+addCommandAlias(
+  "validateCode",
+  List(
+    "scalafmtSbtCheck",
+    "scalafmtCheckAll",
+  ).mkString(";")
+)
