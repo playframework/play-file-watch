@@ -29,7 +29,7 @@ lazy val `play-file-watch` = project
       "io.methvin"             % "directory-watcher" % "0.15.1",
       ("com.github.pathikrit" %% "better-files" % pickVersion(
         scalaBinaryVersion.value,
-        default = "3.8.0",
+        default = "3.9.1",
         forScala210 = "2.17.0"
       )).cross(CrossVersion.for3Use2_13),
       scalaBinaryVersion.value match {
