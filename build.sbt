@@ -47,9 +47,8 @@ lazy val `play-file-watch` = project
         Set.empty
       else
         Set(
-          // TODO: Change org to organization.value later, see https://github.com/playframework/play-file-watch/pull/169
-          "com.lightbend.play" %% name.value % previousStableVersion.value
-            .getOrElse(throw new Error("Unable to determine previous version"))
+          // TODO: uncomment after 1.2.0 final release:
+          // organization.value %% name.value % previousStableVersion.value.getOrElse(throw new Error("Unable to determine previous version"))
         )
     },
     mimaBinaryIssueFilters ++= Seq(
