@@ -7,7 +7,7 @@ object Dependencies {
   // to allow for use in sbt 0.13
   val Scala210 = "2.10.7"
   val Scala211 = "2.11.12"
-  val Scala212 = "2.12.15"
+  val Scala212 = "2.12.16"
   val Scala213 = "2.13.8"
   val Scala3   = "3.1.2"
 
