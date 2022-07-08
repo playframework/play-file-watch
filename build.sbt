@@ -38,7 +38,7 @@ lazy val `play-file-watch` = project
         case "2.11" =>
           "org.specs2" %% "specs2-core" % "4.10.6" % Test
         case _ =>
-          "org.specs2" %% "specs2-core" % "4.15.0" % Test
+          "org.specs2" %% "specs2-core" % "4.16.1" % Test
       }
     ),
     Test / parallelExecution := false,
