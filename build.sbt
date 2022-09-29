@@ -27,23 +27,12 @@ lazy val `play-file-watch` = project
     ),
     libraryDependencies ++= Seq(
       "io.methvin"             % "directory-watcher" % "0.16.1",
-      ("com.github.pathikrit" %% "better-files" % pickVersion(
-        scalaBinaryVersion.value,
-        default = "3.9.1",
-        forScala210 = "2.17.0"
-      )).cross(CrossVersion.for3Use2_13),
-      scalaBinaryVersion.value match {
-        case "2.10" =>
-          "org.specs2" %% "specs2-core" % "3.10.0" % Test
-        case "2.11" =>
-          "org.specs2" %% "specs2-core" % "4.10.6" % Test
-        case _ =>
-          "org.specs2" %% "specs2-core" % "4.16.1" % Test
-      }
+      ("com.github.pathikrit" %% "better-files"      % "3.9.1").cross(CrossVersion.for3Use2_13),
+      "org.specs2"            %% "specs2-core"       % "4.16.1" % Test
     ),
     Test / parallelExecution := false,
     mimaPreviousArtifacts := {
-      if (scalaBinaryVersion.value == "2.10" || scalaBinaryVersion.value == "3")
+      if (scalaBinaryVersion.value == "3")
         Set.empty
       else
         Set(
@@ -59,11 +48,6 @@ lazy val `play-file-watch` = project
       ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.JNotifyFileWatchService$JNotifyDelegate"),
     )
   )
-
-def pickVersion(scalaBinaryVersion: String, default: String, forScala210: String): String = scalaBinaryVersion match {
-  case "2.10" => forScala210
-  case _      => default
-}
 
 addCommandAlias(
   "validateCode",

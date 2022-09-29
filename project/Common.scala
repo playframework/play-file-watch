@@ -29,6 +29,8 @@ object Common extends AutoPlugin {
     "-feature",
     "-unchecked",
     "-Xlint",
+    "-Ywarn-unused:imports",
+    "-Xlint:nullary-unit",
     "-Ywarn-dead-code"
   )
 

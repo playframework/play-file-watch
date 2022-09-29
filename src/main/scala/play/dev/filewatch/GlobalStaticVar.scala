@@ -60,7 +60,7 @@ private[filewatch] object GlobalStaticVar {
         )
       }
     } catch {
-      case e: InstanceNotFoundException =>
+      case _: InstanceNotFoundException =>
         None
     }
   }
@@ -72,7 +72,7 @@ private[filewatch] object GlobalStaticVar {
     try {
       ManagementFactory.getPlatformMBeanServer.unregisterMBean(objectName(name))
     } catch {
-      case e: InstanceNotFoundException =>
+      case _: InstanceNotFoundException =>
     }
   }
 }
