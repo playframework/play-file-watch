@@ -26,9 +26,9 @@ lazy val `play-file-watch` = project
         Nil
     ),
     libraryDependencies ++= Seq(
-      "io.methvin"             % "directory-watcher" % "0.17.1",
-      ("com.github.pathikrit" %% "better-files"      % "3.9.1").cross(CrossVersion.for3Use2_13),
-      "org.specs2"            %% "specs2-core"       % "4.19.0" % Test
+      "io.methvin"            % "directory-watcher" % "0.17.1",
+      "com.github.pathikrit" %% "better-files"      % "3.9.2",
+      "org.specs2"           %% "specs2-core"       % "4.19.0" % Test
     ),
     Test / parallelExecution := false,
     mimaPreviousArtifacts := {
