@@ -31,21 +31,11 @@ lazy val `play-file-watch` = project
       "org.specs2"           %% "specs2-core"       % "4.20.2" % Test
     ),
     Test / parallelExecution := false,
-    mimaPreviousArtifacts := {
-      if (scalaBinaryVersion.value == "3")
-        Set.empty
-      else
-        Set(
-          // TODO: uncomment after 1.2.0 final release:
-          // organization.value %% name.value % previousStableVersion.value.getOrElse(throw new Error("Unable to determine previous version"))
-        )
-    },
+    mimaPreviousArtifacts := Set(
+      organization.value %% name.value % previousStableVersion.value
+        .getOrElse(throw new Error("Unable to determine previous version"))
+    ),
     mimaBinaryIssueFilters ++= Seq(
-      // Remove JNotify
-      ProblemFilters.exclude[DirectMissingMethodProblem]("play.dev.filewatch.FileWatchService.jnotify"),
-      ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.JNotifyFileWatchService"),
-      ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.JNotifyFileWatchService$"),
-      ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.JNotifyFileWatchService$JNotifyDelegate"),
     )
   )
 
