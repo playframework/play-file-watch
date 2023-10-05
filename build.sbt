@@ -31,7 +31,10 @@ lazy val `play-file-watch` = project
       "org.specs2"           %% "specs2-core"       % "4.20.2" % Test
     ),
     Test / parallelExecution := false,
-    mimaFailOnNoPrevious     := false, // TODO: revert
+    mimaPreviousArtifacts := Set(
+      organization.value %% name.value % previousStableVersion.value
+        .getOrElse(throw new Error("Unable to determine previous version"))
+    ),
     mimaBinaryIssueFilters ++= Seq(
     )
   )
