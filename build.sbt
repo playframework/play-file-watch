@@ -16,6 +16,8 @@ Global / onLoad := (Global / onLoad).value.andThen { s =>
   s
 }
 
+val previousVersion: Option[String] = Some("2.0.0")
+
 lazy val `play-file-watch` = project
   .in(file("."))
   .enablePlugins(Common)
@@ -33,10 +35,7 @@ lazy val `play-file-watch` = project
       "org.specs2"           %% "specs2-core"       % "4.20.2" % Test
     ),
     Test / parallelExecution := false,
-    mimaPreviousArtifacts := Set(
-      organization.value %% name.value % previousStableVersion.value
-        .getOrElse(throw new Error("Unable to determine previous version"))
-    ),
+    mimaPreviousArtifacts    := previousVersion.map(organization.value %% moduleName.value % _).toSet,
     mimaBinaryIssueFilters ++= Seq(
     ),
   )
