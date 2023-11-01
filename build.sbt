@@ -37,6 +37,9 @@ lazy val `play-file-watch` = project
     Test / parallelExecution := false,
     mimaPreviousArtifacts    := previousVersion.map(organization.value %% moduleName.value % _).toSet,
     mimaBinaryIssueFilters ++= Seq(
+      // Remove unused GlobalStaticVar
+      ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.GlobalStaticVar"),
+      ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.GlobalStaticVar$"),
     ),
   )
 
