@@ -1,14 +1,25 @@
-import Dependencies._
+/*
+ * Copyright (C) from 2022 The Play Framework Contributors <https://github.com/playframework>, 2011-2021 Lightbend Inc. <https://www.lightbend.com>
+ */
 
-import sbt.Keys._
-import sbt._
+import Dependencies.*
+import sbt.Keys.*
+import sbt.Def
+import sbt.*
 import sbt.plugins.JvmPlugin
+import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.HeaderPattern.commentBetween
+import de.heikoseeberger.sbtheader.CommentStyle
+import de.heikoseeberger.sbtheader.FileType
+import de.heikoseeberger.sbtheader.HeaderPlugin
+import de.heikoseeberger.sbtheader.LineCommentCreator
 
 object Common extends AutoPlugin {
 
+  import HeaderPlugin.autoImport._
+
   override def trigger = noTrigger
 
-  override def requires = JvmPlugin
+  override def requires = JvmPlugin && HeaderPlugin
 
   val repoName = "play-file-watch"
 
@@ -58,5 +69,22 @@ object Common extends AutoPlugin {
       ),
       description := "Play File Watch Library. Watch files in a platform independent way."
     )
+
+  override def projectSettings = Seq(
+    headerLicense := Some(
+      HeaderLicense.Custom(
+        "Copyright (C) from 2022 The Play Framework Contributors <https://github.com/playframework>, 2011-2021 Lightbend Inc. <https://www.lightbend.com>"
+      )
+    ),
+    headerMappings ++= Map(
+      FileType("sbt")        -> HeaderCommentStyle.cppStyleLineComment,
+      FileType("properties") -> HeaderCommentStyle.hashLineComment,
+      FileType("md") -> CommentStyle(new LineCommentCreator("<!---", "-->"), commentBetween("<!---", "*", "-->"))
+    ),
+    (Compile / headerSources) ++=
+      ((baseDirectory.value ** ("*.properties" || "*.md" || "*.sbt"))
+        --- (baseDirectory.value ** "target" ** "*")).get ++
+        (baseDirectory.value / "project" ** "*.scala" --- (baseDirectory.value ** "target" ** "*")).get
+  )
 
 }
