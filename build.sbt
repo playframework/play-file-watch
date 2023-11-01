@@ -1,3 +1,5 @@
+// Copyright (C) from 2022 The Play Framework Contributors <https://github.com/playframework>, 2011-2021 Lightbend Inc. <https://www.lightbend.com>
+
 import com.typesafe.tools.mima.core.DirectMissingMethodProblem
 
 import com.typesafe.tools.mima.core.MissingClassProblem
@@ -36,12 +38,13 @@ lazy val `play-file-watch` = project
         .getOrElse(throw new Error("Unable to determine previous version"))
     ),
     mimaBinaryIssueFilters ++= Seq(
-    )
+    ),
   )
 
 addCommandAlias(
   "validateCode",
   List(
+    "headerCheckAll",
     "scalafmtSbtCheck",
     "scalafmtCheckAll",
   ).mkString(";")
