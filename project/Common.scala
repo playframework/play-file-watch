@@ -51,10 +51,11 @@ object Common extends AutoPlugin {
       organizationHomepage := Some(url("https://playframework.com/")),
       homepage             := Some(url(s"https://github.com/playframework/${repoName}")),
       licenses             := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.html")),
-      scalaVersion         := Scala212,
-      crossScalaVersions   := ScalaVersions,
+      scalaVersion         := Scala213,
+      crossPaths           := false,
+      autoScalaLibrary     := false,
       scalacOptions ++= scalacParameters,
-      javacOptions ++= javacParameters,
+      compile / javacOptions ++= javacParameters,
       scmInfo := Some(
         ScmInfo(
           url(s"https://github.com/playframework/${repoName}"),

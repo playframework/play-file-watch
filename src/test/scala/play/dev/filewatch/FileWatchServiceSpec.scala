@@ -7,38 +7,41 @@ package play.dev.filewatch
 import better.files._
 import org.specs2.mutable.Specification
 
+import java.util.function.Supplier
 import scala.concurrent.duration._
+import scala.jdk.FunctionConverters._
+import scala.jdk.CollectionConverters._
 
 class JavaFileWatchServiceSpec extends FileWatchServiceSpec {
   // the mac impl consistently fails because it takes more than 5s so skip this one on mac
-  args(skipAll = FileWatchService.os == FileWatchService.OS.Mac)
+  args(skipAll = FileWatchService.OS.getCurrent == FileWatchService.OS.Mac)
 
   override def watchService: FileWatchService =
-    FileWatchService.jdk7(FileWatchServiceSpecLoggerProxy, disableFileHashCheck = false)
+    FileWatchService.jdk7(FileWatchServiceSpecLoggerProxy, false)
 }
 
 class JavaFileWatchServiceHashCheckDisabledSpec extends FileWatchServiceSpec {
   // the mac impl consistently fails because it takes more than 5s so skip this one on mac
-  args(skipAll = FileWatchService.os == FileWatchService.OS.Mac)
+  args(skipAll = FileWatchService.OS.getCurrent == FileWatchService.OS.Mac)
 
   override def watchService: FileWatchService =
-    FileWatchService.jdk7(FileWatchServiceSpecLoggerProxy, disableFileHashCheck = true)
+    FileWatchService.jdk7(FileWatchServiceSpecLoggerProxy, true)
 }
 
 class MacFileWatchServiceSpec extends FileWatchServiceSpec {
   // this only works on mac
-  args(skipAll = FileWatchService.os != FileWatchService.OS.Mac)
+  args(skipAll = FileWatchService.OS.getCurrent != FileWatchService.OS.Mac)
 
   override def watchService: FileWatchService =
-    FileWatchService.mac(FileWatchServiceSpecLoggerProxy, disableFileHashCheck = false)
+    FileWatchService.mac(FileWatchServiceSpecLoggerProxy, false)
 }
 
 class MacFileWatchServiceHashCheckDisabledSpec extends FileWatchServiceSpec {
   // this only works on mac
-  args(skipAll = FileWatchService.os != FileWatchService.OS.Mac)
+  args(skipAll = FileWatchService.OS.getCurrent != FileWatchService.OS.Mac)
 
   override def watchService: FileWatchService =
-    FileWatchService.mac(FileWatchServiceSpecLoggerProxy, disableFileHashCheck = true)
+    FileWatchService.mac(FileWatchServiceSpecLoggerProxy, true)
 }
 
 class PollingFileWatchServiceSpec extends FileWatchServiceSpec {
@@ -46,13 +49,13 @@ class PollingFileWatchServiceSpec extends FileWatchServiceSpec {
 }
 
 object FileWatchServiceSpecLoggerProxy extends LoggerProxy {
-  override def verbose(message: => String): Unit = ()
-  override def debug(message: => String): Unit   = ()
-  override def info(message: => String): Unit    = ()
-  override def warn(message: => String): Unit    = ()
-  override def error(message: => String): Unit   = ()
-  override def trace(t: => Throwable): Unit      = ()
-  override def success(message: => String): Unit = ()
+  override def verbose(message: Supplier[String]): Unit = ()
+  override def debug(message: Supplier[String]): Unit   = ()
+  override def info(message: Supplier[String]): Unit    = ()
+  override def warn(message: Supplier[String]): Unit    = ()
+  override def error(message: Supplier[String]): Unit   = ()
+  override def trace(t: Supplier[Throwable]): Unit      = ()
+  override def success(message: Supplier[String]): Unit = ()
 }
 
 abstract class FileWatchServiceSpec extends Specification {
@@ -80,9 +83,10 @@ abstract class FileWatchServiceSpec extends Specification {
     startTime = System.nanoTime
   }
 
-  private def reportChange(): Unit = {
+  private def reportChange(): Void = {
     endTime = System.nanoTime
     changed = true
+    null
   }
 
   private def assertChanged() = {
@@ -98,7 +102,7 @@ abstract class FileWatchServiceSpec extends Specification {
   }
 
   private def watchFiles[T](files: File*)(block: => T): T = {
-    val watcher = watchService.watch(files.map(_.toJava), () => reportChange())
+    val watcher = watchService.watch(files.map(_.toJava).asJava, (() => reportChange()).asJava)
     reset()
     try {
       block
