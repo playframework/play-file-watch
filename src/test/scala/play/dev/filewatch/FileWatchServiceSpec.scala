@@ -14,7 +14,7 @@ import scala.jdk.CollectionConverters._
 
 class JavaFileWatchServiceSpec extends FileWatchServiceSpec {
   // the mac impl consistently fails because it takes more than 5s so skip this one on mac
-  args(skipAll = FileWatchService.OS.getCurrent == FileWatchService.OS.Mac)
+  args(skipAll = OS.getCurrent == OS.Mac)
 
   override def watchService: FileWatchService =
     FileWatchService.jdk7(FileWatchServiceSpecLoggerProxy, false)
@@ -22,7 +22,7 @@ class JavaFileWatchServiceSpec extends FileWatchServiceSpec {
 
 class JavaFileWatchServiceHashCheckDisabledSpec extends FileWatchServiceSpec {
   // the mac impl consistently fails because it takes more than 5s so skip this one on mac
-  args(skipAll = FileWatchService.OS.getCurrent == FileWatchService.OS.Mac)
+  args(skipAll = OS.getCurrent == OS.Mac)
 
   override def watchService: FileWatchService =
     FileWatchService.jdk7(FileWatchServiceSpecLoggerProxy, true)
@@ -30,7 +30,7 @@ class JavaFileWatchServiceHashCheckDisabledSpec extends FileWatchServiceSpec {
 
 class MacFileWatchServiceSpec extends FileWatchServiceSpec {
   // this only works on mac
-  args(skipAll = FileWatchService.OS.getCurrent != FileWatchService.OS.Mac)
+  args(skipAll = OS.getCurrent != OS.Mac)
 
   override def watchService: FileWatchService =
     FileWatchService.mac(FileWatchServiceSpecLoggerProxy, false)
@@ -38,7 +38,7 @@ class MacFileWatchServiceSpec extends FileWatchServiceSpec {
 
 class MacFileWatchServiceHashCheckDisabledSpec extends FileWatchServiceSpec {
   // this only works on mac
-  args(skipAll = FileWatchService.OS.getCurrent != FileWatchService.OS.Mac)
+  args(skipAll = OS.getCurrent != OS.Mac)
 
   override def watchService: FileWatchService =
     FileWatchService.mac(FileWatchServiceSpecLoggerProxy, true)

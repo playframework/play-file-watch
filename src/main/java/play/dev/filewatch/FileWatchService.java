@@ -5,7 +5,6 @@
 package play.dev.filewatch;
 
 import java.io.File;
-import java.util.Locale;
 import java.util.function.Supplier;
 
 /** A service that can watch files */
@@ -19,27 +18,6 @@ public interface FileWatchService {
    * @return A watcher
    */
   FileWatcher watch(Iterable<File> filesToWatch, Supplier<Void> onChange);
-
-  enum OS {
-    Windows,
-    Linux,
-    Mac,
-    Other;
-
-    static OS getCurrent() {
-      String osName = System.getProperty("os.name");
-      if (osName == null) return Other;
-      osName = osName.toLowerCase(Locale.ENGLISH);
-      if (osName.contains("darwin") || osName.contains("mac")) {
-        return Mac;
-      } else if (osName.contains("windows")) {
-        return Windows;
-      } else if (osName.contains("linux")) {
-        return Linux;
-      }
-      return Other;
-    }
-  }
 
   static FileWatchService defaultWatchService(int pollDelayMillis, LoggerProxy logger) {
     return defaultWatchService(pollDelayMillis, logger, false);
