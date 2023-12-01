@@ -100,10 +100,6 @@ public interface FileWatchService {
     return new PollingFileWatchService(pollDelayMillis);
   }
 
-  static FileWatchService optional(FileWatchService watchService) {
-    return new OptionalFileWatchServiceDelegate(watchService);
-  }
-
   /** This method was previously named "default" */
   static FileWatchService defaultFileWatchService(
       LoggerProxy logger, boolean isMac, boolean disableFileHashCheck) {
