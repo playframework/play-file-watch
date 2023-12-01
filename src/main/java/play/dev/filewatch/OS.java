@@ -9,9 +9,7 @@ enum OS {
   Other;
 
   static OS getCurrent() {
-    String osName = System.getProperty("os.name");
-    if (osName == null) return Other;
-    osName = osName.toLowerCase(Locale.ENGLISH);
+    final var osName = System.getProperty("os.name", "unknown").toLowerCase(Locale.ENGLISH);
     if (osName.contains("darwin") || osName.contains("mac")) {
       return Mac;
     } else if (osName.contains("windows")) {

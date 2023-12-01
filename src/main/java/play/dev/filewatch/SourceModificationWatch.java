@@ -86,12 +86,9 @@ public final class SourceModificationWatch {
           lastModifiedTime > state.getLastCallbackCallTime()
               || !state.getPreviousFiles().equals(sourceFilesPath);
 
-      var triggered = state.isAwaitingQuietPeriod();
-      var newCallbackCallTime = state.getLastCallbackCallTime();
-      if (sourcesModified) {
-        triggered = false;
-        newCallbackCallTime = System.currentTimeMillis();
-      }
+      var triggered = sourcesModified ? false : state.isAwaitingQuietPeriod();
+      var newCallbackCallTime =
+          sourcesModified ? System.currentTimeMillis() : state.getLastCallbackCallTime();
 
       var newState =
           new WatchState(
