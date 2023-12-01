@@ -9,7 +9,6 @@ import org.specs2.mutable.Specification
 
 import java.util.function.Supplier
 import scala.concurrent.duration._
-import scala.jdk.FunctionConverters._
 import scala.jdk.CollectionConverters._
 
 class JavaFileWatchServiceSpec extends FileWatchServiceSpec {
@@ -102,7 +101,7 @@ abstract class FileWatchServiceSpec extends Specification {
   }
 
   private def watchFiles[T](files: File*)(block: => T): T = {
-    val watcher = watchService.watch(files.map(_.toJava).asJava, (() => reportChange()).asJava)
+    val watcher = watchService.watch(files.map(_.toJava).asJava, () => reportChange())
     reset()
     try {
       block
