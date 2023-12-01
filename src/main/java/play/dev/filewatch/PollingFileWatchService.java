@@ -23,8 +23,8 @@ public class PollingFileWatchService implements FileWatchService {
     this.pollDelayMillis = pollDelayMillis;
   }
 
-  private static Iterable<File> listRecursively(Iterable<File> sourcesFinder) {
-    return StreamSupport.stream(sourcesFinder.spliterator(), false)
+  private static Iterable<File> listRecursively(Iterable<File> files) {
+    return StreamSupport.stream(files.spliterator(), false)
         .flatMap(
             file -> {
               try {
