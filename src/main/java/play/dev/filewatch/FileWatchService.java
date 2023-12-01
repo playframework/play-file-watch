@@ -19,6 +19,26 @@ public interface FileWatchService {
    */
   FileWatcher watch(Iterable<File> filesToWatch, Supplier<Void> onChange);
 
+  /**
+   * @deprecated Renamed to {@link #detect(int, LoggerProxy)}, the first argument targetDirectory of
+   *     type File is not used anymore
+   */
+  @Deprecated
+  static FileWatchService defaultWatchService(
+      File targetDirectory, int pollDelayMillis, LoggerProxy logger) {
+    return detect(pollDelayMillis, logger, false);
+  }
+
+  /**
+   * @deprecated Renamed to {@link #detect(int, LoggerProxy, Boolean)}, the first argument
+   *     targetDirectory of type File is not used anymore
+   */
+  @Deprecated
+  static FileWatchService defaultWatchService(
+      File targetDirectory, int pollDelayMillis, LoggerProxy logger, Boolean disableFileHashCheck) {
+    return detect(pollDelayMillis, logger, disableFileHashCheck);
+  }
+
   /** @deprecated Renamed to {@link #detect(int, LoggerProxy)} */
   @Deprecated
   static FileWatchService defaultWatchService(int pollDelayMillis, LoggerProxy logger) {
