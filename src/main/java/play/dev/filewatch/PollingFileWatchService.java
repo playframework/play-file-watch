@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -38,7 +37,7 @@ public class PollingFileWatchService implements FileWatchService {
   }
 
   @Override
-  public FileWatcher watch(Iterable<File> filesToWatch, Supplier<Void> onChange) {
+  public FileWatcher watch(Iterable<File> filesToWatch, Runnable onChange) {
     stopped = false;
 
     var thread =
@@ -53,7 +52,7 @@ public class PollingFileWatchService implements FileWatchService {
                         state,
                         () -> stopped);
                 if (result.isTriggered()) {
-                  onChange.get();
+                  onChange.run();
                 }
                 state = result.getState();
               }

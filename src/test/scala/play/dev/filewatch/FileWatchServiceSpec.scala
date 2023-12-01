@@ -82,10 +82,9 @@ abstract class FileWatchServiceSpec extends Specification {
     startTime = System.nanoTime
   }
 
-  private def reportChange(): Void = {
+  private def reportChange(): Unit = {
     endTime = System.nanoTime
     changed = true
-    null
   }
 
   private def assertChanged() = {

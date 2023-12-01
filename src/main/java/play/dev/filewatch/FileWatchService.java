@@ -5,7 +5,6 @@
 package play.dev.filewatch;
 
 import java.io.File;
-import java.util.function.Supplier;
 
 /** A service that can watch files */
 public interface FileWatchService {
@@ -17,7 +16,7 @@ public interface FileWatchService {
    * @param onChange A callback that is executed whenever something changes.
    * @return A watcher
    */
-  FileWatcher watch(Iterable<File> filesToWatch, Supplier<Void> onChange);
+  FileWatcher watch(Iterable<File> filesToWatch, Runnable onChange);
 
   /**
    * @deprecated Renamed to {@link #detect(int, LoggerProxy)}, the first argument targetDirectory of
@@ -89,7 +88,7 @@ public interface FileWatchService {
     return new FileWatchService() {
 
       @Override
-      public FileWatcher watch(Iterable<File> filesToWatch, Supplier<Void> onChange) {
+      public FileWatcher watch(Iterable<File> filesToWatch, Runnable onChange) {
         return delegate.watch(filesToWatch, onChange);
       }
 
