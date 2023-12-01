@@ -21,7 +21,7 @@ public interface FileWatchService {
   FileWatcher watch(Iterable<File> filesToWatch, Runnable onChange);
 
   /** @deprecated Use {@link #watch(Iterable, Runnable)} instead */
-  @Deprecated
+  @Deprecated(since = "3.0.0", forRemoval = true)
   default FileWatcher watch(List<File> filesToWatch, Callable<Void> onChange) {
     return watch(filesToWatch, () -> onChange.call());
   }
@@ -30,7 +30,7 @@ public interface FileWatchService {
    * @deprecated Renamed to {@link #detect(int, LoggerProxy)}, the first argument targetDirectory of
    *     type File is not used anymore
    */
-  @Deprecated
+  @Deprecated(since = "3.0.0", forRemoval = true)
   static FileWatchService defaultWatchService(
       File targetDirectory, int pollDelayMillis, LoggerProxy logger) {
     return detect(pollDelayMillis, logger, false);
@@ -40,20 +40,20 @@ public interface FileWatchService {
    * @deprecated Renamed to {@link #detect(int, LoggerProxy, Boolean)}, the first argument
    *     targetDirectory of type File is not used anymore
    */
-  @Deprecated
+  @Deprecated(since = "3.0.0", forRemoval = true)
   static FileWatchService defaultWatchService(
       File targetDirectory, int pollDelayMillis, LoggerProxy logger, Boolean disableFileHashCheck) {
     return detect(pollDelayMillis, logger, disableFileHashCheck);
   }
 
   /** @deprecated Renamed to {@link #detect(int, LoggerProxy)} */
-  @Deprecated
+  @Deprecated(since = "3.0.0", forRemoval = true)
   static FileWatchService defaultWatchService(int pollDelayMillis, LoggerProxy logger) {
     return detect(pollDelayMillis, logger, false);
   }
 
   /** @deprecated Renamed to {@link #detect(int, LoggerProxy, Boolean)} */
-  @Deprecated
+  @Deprecated(since = "3.0.0", forRemoval = true)
   static FileWatchService defaultWatchService(
       int pollDelayMillis, LoggerProxy logger, Boolean disableFileHashCheck) {
     return detect(pollDelayMillis, logger, disableFileHashCheck);
