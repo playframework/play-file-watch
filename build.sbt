@@ -1,9 +1,11 @@
 // Copyright (C) from 2022 The Play Framework Contributors <https://github.com/playframework>, 2011-2021 Lightbend Inc. <https://www.lightbend.com>
 
 import com.typesafe.tools.mima.core.DirectMissingMethodProblem
-
+import com.typesafe.tools.mima.core.InaccessibleClassProblem
+import com.typesafe.tools.mima.core.IncompatibleMethTypeProblem
 import com.typesafe.tools.mima.core.MissingClassProblem
 import com.typesafe.tools.mima.core.ProblemFilters
+import com.typesafe.tools.mima.core.ReversedMissingMethodProblem
 import com.typesafe.tools.mima.plugin.MimaKeys.mimaBinaryIssueFilters
 
 // Customise sbt-dynver's behaviour to make it work with tags which aren't v-prefixed
@@ -22,16 +24,9 @@ lazy val `play-file-watch` = project
   .in(file("."))
   .enablePlugins(Common)
   .settings(
-    // workaround for https://github.com/scala/scala-dev/issues/249
-    Compile / doc / scalacOptions ++= (
-      if (scalaBinaryVersion.value == "2.12")
-        Seq("-no-java-comments", "-Ywarn-unused:imports", "-Xlint:nullary-unit")
-      else
-        Nil
-    ),
     libraryDependencies ++= Seq(
       "io.methvin"            % "directory-watcher" % "0.18.0",
-      "com.github.pathikrit" %% "better-files"      % "3.9.2",
+      "com.github.pathikrit" %% "better-files"      % "3.9.2"  % Test,
       "org.specs2"           %% "specs2-core"       % "4.20.2" % Test
     ),
     Test / parallelExecution := false,
@@ -40,6 +35,22 @@ lazy val `play-file-watch` = project
       // Remove unused GlobalStaticVar
       ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.GlobalStaticVar"),
       ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.GlobalStaticVar$"),
+      // Migrate to pure Java implementation
+      ProblemFilters.exclude[DirectMissingMethodProblem]("play.dev.filewatch.FileWatchService.*"),
+      ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.FileWatchService.*"),
+      ProblemFilters.exclude[ReversedMissingMethodProblem]("play.dev.filewatch.FileWatchService.watch"),
+      ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.FileWatchService*"),
+      ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.LoggerProxy.*"),
+      ProblemFilters.exclude[ReversedMissingMethodProblem]("play.dev.filewatch.LoggerProxy.*"),
+      ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.OptionalFileWatchServiceDelegate"),
+      ProblemFilters.exclude[DirectMissingMethodProblem]("play.dev.filewatch.PollingFileWatchService.pollDelayMillis"),
+      ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.SourceModificationWatch$"),
+      ProblemFilters.exclude[DirectMissingMethodProblem]("play.dev.filewatch.WatchState.*"),
+      ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.DefaultFileWatchService.watch"),
+      ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.PollingFileWatchService.watch"),
+      ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.SourceModificationWatch.watch"),
+      ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.WatchState.this"),
+      ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.WatchState$"),
     ),
   )
 
@@ -49,5 +60,6 @@ addCommandAlias(
     "headerCheckAll",
     "scalafmtSbtCheck",
     "scalafmtCheckAll",
+    "javafmtCheckAll"
   ).mkString(";")
 )
