@@ -5,6 +5,8 @@
 package play.dev.filewatch;
 
 import java.io.File;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 /** A service that can watch files */
 public interface FileWatchService {
@@ -17,6 +19,12 @@ public interface FileWatchService {
    * @return A watcher
    */
   FileWatcher watch(Iterable<File> filesToWatch, Runnable onChange);
+
+  /** @deprecated Use {@link #watch(Iterable, Runnable)} instead */
+  @Deprecated
+  default FileWatcher watch(List<File> filesToWatch, Callable<Void> onChange) {
+    return watch(filesToWatch, () -> onChange.call());
+  }
 
   /**
    * @deprecated Renamed to {@link #detect(int, LoggerProxy)}, the first argument targetDirectory of
