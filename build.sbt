@@ -35,21 +35,20 @@ lazy val `play-file-watch` = project
       // Remove unused GlobalStaticVar
       ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.GlobalStaticVar"),
       ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.GlobalStaticVar$"),
-      // Use Supplier instead of Callable
-      ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.*.watch"),
-      ProblemFilters.exclude[ReversedMissingMethodProblem]("play.dev.filewatch.*.watch"),
       // Migrate to pure Java implementation
       ProblemFilters.exclude[DirectMissingMethodProblem]("play.dev.filewatch.FileWatchService.*"),
       ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.FileWatchService.*"),
+      ProblemFilters.exclude[ReversedMissingMethodProblem]("play.dev.filewatch.FileWatchService.watch"),
       ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.FileWatchService*"),
       ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.LoggerProxy.*"),
       ProblemFilters.exclude[ReversedMissingMethodProblem]("play.dev.filewatch.LoggerProxy.*"),
-      ProblemFilters
-        .exclude[DirectMissingMethodProblem]("play.dev.filewatch.OptionalFileWatchServiceDelegate.watchService"),
-      ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.OptionalFileWatchServiceDelegate.this"),
+      ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.OptionalFileWatchServiceDelegate"),
       ProblemFilters.exclude[DirectMissingMethodProblem]("play.dev.filewatch.PollingFileWatchService.pollDelayMillis"),
       ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.SourceModificationWatch$"),
       ProblemFilters.exclude[DirectMissingMethodProblem]("play.dev.filewatch.WatchState.*"),
+      ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.DefaultFileWatchService.watch"),
+      ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.PollingFileWatchService.watch"),
+      ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.SourceModificationWatch.watch"),
       ProblemFilters.exclude[IncompatibleMethTypeProblem]("play.dev.filewatch.WatchState.this"),
       ProblemFilters.exclude[MissingClassProblem]("play.dev.filewatch.WatchState$"),
     ),
