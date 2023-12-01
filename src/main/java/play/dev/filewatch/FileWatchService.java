@@ -19,11 +19,24 @@ public interface FileWatchService {
    */
   FileWatcher watch(Iterable<File> filesToWatch, Supplier<Void> onChange);
 
+  /** @deprecated Renamed to {@link #detect(int, LoggerProxy)} */
+  @Deprecated
   static FileWatchService defaultWatchService(int pollDelayMillis, LoggerProxy logger) {
-    return defaultWatchService(pollDelayMillis, logger, false);
+    return detect(pollDelayMillis, logger, false);
   }
 
+  /** @deprecated Renamed to {@link #detect(int, LoggerProxy, Boolean)} */
+  @Deprecated
   static FileWatchService defaultWatchService(
+      int pollDelayMillis, LoggerProxy logger, Boolean disableFileHashCheck) {
+    return detect(pollDelayMillis, logger, disableFileHashCheck);
+  }
+
+  static FileWatchService detect(int pollDelayMillis, LoggerProxy logger) {
+    return detect(pollDelayMillis, logger, false);
+  }
+
+  static FileWatchService detect(
       int pollDelayMillis, LoggerProxy logger, Boolean disableFileHashCheck) {
     FileWatchService watchService;
     switch (OS.getCurrent()) {
@@ -68,7 +81,7 @@ public interface FileWatchService {
   }
 
   static FileWatchService jdk7(LoggerProxy logger, boolean disableFileHashCheck) {
-    return def(logger, false, disableFileHashCheck);
+    return defaultFileWatchService(logger, false, disableFileHashCheck);
   }
 
   static FileWatchService jdk7(LoggerProxy logger) {
@@ -76,7 +89,7 @@ public interface FileWatchService {
   }
 
   static FileWatchService mac(LoggerProxy logger, boolean disableFileHashCheck) {
-    return def(logger, true, disableFileHashCheck);
+    return defaultFileWatchService(logger, true, disableFileHashCheck);
   }
 
   static FileWatchService mac(LoggerProxy logger) {
@@ -91,11 +104,14 @@ public interface FileWatchService {
     return new OptionalFileWatchServiceDelegate(watchService);
   }
 
-  static FileWatchService def(LoggerProxy logger, boolean isMac, boolean disableFileHashCheck) {
+  /** This method was previously named "default" */
+  static FileWatchService defaultFileWatchService(
+      LoggerProxy logger, boolean isMac, boolean disableFileHashCheck) {
     return new DefaultFileWatchService(logger, isMac, disableFileHashCheck);
   }
 
-  static FileWatchService def(LoggerProxy logger, boolean isMac) {
-    return def(logger, isMac, false);
+  /** This method was previously named "default" */
+  static FileWatchService defaultFileWatchService(LoggerProxy logger, boolean isMac) {
+    return defaultFileWatchService(logger, isMac, false);
   }
 }
