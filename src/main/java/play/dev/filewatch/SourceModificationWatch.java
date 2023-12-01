@@ -18,8 +18,9 @@ public final class SourceModificationWatch {
 
   private SourceModificationWatch() {}
 
-  private static Set<File> listFiles(Iterable<File> sourcesFinder) {
-    return StreamSupport.stream(sourcesFinder.spliterator(), false).collect(Collectors.toSet());
+  private static Set<File> listFiles(Supplier<Iterable<File>> sourcesFinder) {
+    return StreamSupport.stream(sourcesFinder.get().spliterator(), false)
+        .collect(Collectors.toSet());
   }
 
   private static long findLastModifiedTime(File file) {
@@ -66,7 +67,7 @@ public final class SourceModificationWatch {
       WatchState state,
       final Supplier<Boolean> terminationCondition) {
     while (true) {
-      var filesToWatch = listFiles(sourcesFinder.get());
+      var filesToWatch = listFiles(sourcesFinder);
 
       var sourceFilesPath =
           filesToWatch.stream()
