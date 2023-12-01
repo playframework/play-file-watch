@@ -37,6 +37,7 @@ jobs:
       - "check-docs"
     uses: playframework/.github/.github/workflows/cmd.yml@v3
     with:
+      java: 21, 17, 11
       cmd: sbt test
 
   finish:
