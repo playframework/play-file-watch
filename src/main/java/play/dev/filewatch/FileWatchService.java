@@ -23,7 +23,17 @@ public interface FileWatchService {
   /** @deprecated Use {@link #watch(Iterable, Runnable)} instead */
   @Deprecated(since = "3.0.0", forRemoval = true)
   default FileWatcher watch(List<File> filesToWatch, Callable<Void> onChange) {
-    return watch(filesToWatch, () -> onChange.call());
+    return watch(
+        filesToWatch,
+        () -> {
+          try {
+            onChange.call();
+          } catch (RuntimeException e) {
+            throw e;
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+        });
   }
 
   /**
