@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /** A polling Play watch service. Polls in the background. */
@@ -29,7 +28,7 @@ public class PollingFileWatchService implements FileWatchService {
               try {
                 return Files.walk(file.toPath()).filter(path -> !path.equals(file.toPath()));
               } catch (IOException e) {
-                return Stream.empty();
+                throw new RuntimeException(e);
               }
             })
         .map(Path::toFile)
