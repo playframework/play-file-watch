@@ -27,7 +27,7 @@ public final class SourceModificationWatch {
     try {
       return Files.getLastModifiedTime(file.toPath()).toInstant().toEpochMilli();
     } catch (IOException e) {
-      return 0L;
+      throw new RuntimeException(e);
     }
   }
 
@@ -76,7 +76,7 @@ public final class SourceModificationWatch {
                     try {
                       return file.getCanonicalPath();
                     } catch (IOException e) {
-                      return null;
+                      throw new RuntimeException(e);
                     }
                   })
               .filter(Objects::nonNull)
