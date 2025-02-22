@@ -2,7 +2,6 @@
  * Copyright (C) from 2022 The Play Framework Contributors <https://github.com/playframework>, 2011-2021 Lightbend Inc. <https://www.lightbend.com>
  */
 
-import Dependencies.*
 import sbt.Keys.*
 import sbt.Def
 import sbt.*
@@ -51,7 +50,7 @@ object Common extends AutoPlugin {
       organizationHomepage := Some(url("https://playframework.com/")),
       homepage             := Some(url(s"https://github.com/playframework/${repoName}")),
       licenses             := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.html")),
-      scalaVersion         := Scala213,
+      scalaVersion         := "2.13.16",
       crossPaths           := false,
       autoScalaLibrary     := false,
       scalacOptions ++= scalacParameters,
