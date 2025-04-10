@@ -51,7 +51,8 @@ public class DefaultFileWatchService implements FileWatchService {
                                 + file.getAbsolutePath());
                     logger.warn(
                         () ->
-                            "DefaultFileWatchService only supports watching directories. The file will not be watched.");
+                            "DefaultFileWatchService only supports watching directories. The file"
+                                + " will not be watched.");
                     return false;
                   } else {
                     return false;
