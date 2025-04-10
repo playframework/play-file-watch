@@ -20,7 +20,9 @@ public interface FileWatchService {
    */
   FileWatcher watch(Iterable<File> filesToWatch, Runnable onChange);
 
-  /** @deprecated Use {@link #watch(Iterable, Runnable)} instead */
+  /**
+   * @deprecated Use {@link #watch(Iterable, Runnable)} instead
+   */
   @Deprecated(since = "3.0.0", forRemoval = true)
   default FileWatcher watch(List<File> filesToWatch, Callable<Void> onChange) {
     return watch(
@@ -56,13 +58,17 @@ public interface FileWatchService {
     return detect(pollDelayMillis, logger, disableFileHashCheck);
   }
 
-  /** @deprecated Renamed to {@link #detect(int, LoggerProxy)} */
+  /**
+   * @deprecated Renamed to {@link #detect(int, LoggerProxy)}
+   */
   @Deprecated(since = "3.0.0", forRemoval = true)
   static FileWatchService defaultWatchService(int pollDelayMillis, LoggerProxy logger) {
     return detect(pollDelayMillis, logger, false);
   }
 
-  /** @deprecated Renamed to {@link #detect(int, LoggerProxy, Boolean)} */
+  /**
+   * @deprecated Renamed to {@link #detect(int, LoggerProxy, Boolean)}
+   */
   @Deprecated(since = "3.0.0", forRemoval = true)
   static FileWatchService defaultWatchService(
       int pollDelayMillis, LoggerProxy logger, Boolean disableFileHashCheck) {
@@ -77,14 +83,14 @@ public interface FileWatchService {
       int pollDelayMillis, LoggerProxy logger, Boolean disableFileHashCheck) {
     FileWatchService watchService;
     switch (OS.getCurrent()) {
-        // If Windows or Linux, use JDK7 Watch Service (assume JDK7+)
+      // If Windows or Linux, use JDK7 Watch Service (assume JDK7+)
       case Windows:
       case Linux:
         {
           watchService = jdk7(logger, disableFileHashCheck);
           break;
         }
-        // If macOS, use the mac implementation
+      // If macOS, use the mac implementation
       case Mac:
         {
           try {
@@ -96,7 +102,7 @@ public interface FileWatchService {
           }
           break;
         }
-        // Fall back to polling watch service
+      // Fall back to polling watch service
       default:
         watchService = polling(pollDelayMillis);
         break;
