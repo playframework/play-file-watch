@@ -60,7 +60,7 @@ trait FileWatcher {
 
 object FileWatchService {
   private[filewatch] sealed trait OS {}
-  private[filewatch] object OS {
+  private[filewatch] object OS       {
     case object Windows extends OS
     case object Linux   extends OS
     case object Mac     extends OS
