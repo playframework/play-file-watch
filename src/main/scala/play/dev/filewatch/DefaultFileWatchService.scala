@@ -32,7 +32,7 @@ class DefaultFileWatchService(logger: LoggerProxy, isMac: Boolean, disableFileHa
       } else false
     }
 
-    val watchService = if (isMac) new MacOSXListeningWatchService() else FileSystems.getDefault.newWatchService()
+    val watchService     = if (isMac) new MacOSXListeningWatchService() else FileSystems.getDefault.newWatchService()
     val directoryWatcher =
       DirectoryWatcher
         .builder()
