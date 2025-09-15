@@ -6,11 +6,11 @@ import sbt.Keys.*
 import sbt.Def
 import sbt.*
 import sbt.plugins.JvmPlugin
-import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.HeaderPattern.commentBetween
-import de.heikoseeberger.sbtheader.CommentStyle
-import de.heikoseeberger.sbtheader.FileType
-import de.heikoseeberger.sbtheader.HeaderPlugin
-import de.heikoseeberger.sbtheader.LineCommentCreator
+import sbtheader.HeaderPlugin.autoImport.HeaderPattern.commentBetween
+import sbtheader.CommentStyle
+import sbtheader.FileType
+import sbtheader.HeaderPlugin
+import sbtheader.LineCommentCreator
 
 object Common extends AutoPlugin {
 
