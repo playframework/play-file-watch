@@ -27,7 +27,7 @@ lazy val `play-file-watch` = project
     libraryDependencies ++= Seq(
       "io.methvin"            % "directory-watcher" % "0.19.1",
       "com.github.pathikrit" %% "better-files"      % "3.9.2"  % Test,
-      "org.specs2"           %% "specs2-core"       % "4.22.0" % Test
+      "org.specs2"           %% "specs2-core"       % "4.23.0" % Test
     ),
     Test / parallelExecution := false,
     mimaPreviousArtifacts    := previousVersion.map(organization.value %% moduleName.value % _).toSet,
