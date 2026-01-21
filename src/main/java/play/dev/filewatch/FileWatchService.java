@@ -5,8 +5,11 @@
 package play.dev.filewatch;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 /** A service that can watch files */
 public interface FileWatchService {
@@ -18,16 +21,16 @@ public interface FileWatchService {
    * @param onChange A callback that is executed whenever something changes.
    * @return A watcher
    */
-  FileWatcher watch(Iterable<File> filesToWatch, Runnable onChange);
+  FileWatcher watch(Iterable<File> filesToWatch, Consumer<Optional<Path>> onChange);
 
   /**
-   * @deprecated Use {@link #watch(Iterable, Runnable)} instead
+   * @deprecated Use {@link #watch(Iterable, Consumer)} instead
    */
   @Deprecated(since = "3.0.0", forRemoval = true)
   default FileWatcher watch(List<File> filesToWatch, Callable<Void> onChange) {
     return watch(
         filesToWatch,
-        () -> {
+        dirChangeEvent -> {
           try {
             onChange.call();
           } catch (RuntimeException e) {
@@ -112,7 +115,7 @@ public interface FileWatchService {
     return new FileWatchService() {
 
       @Override
-      public FileWatcher watch(Iterable<File> filesToWatch, Runnable onChange) {
+      public FileWatcher watch(Iterable<File> filesToWatch, Consumer<Optional<Path>> onChange) {
         return delegate.watch(filesToWatch, onChange);
       }
 
