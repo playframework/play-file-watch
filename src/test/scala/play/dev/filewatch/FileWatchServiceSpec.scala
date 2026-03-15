@@ -100,7 +100,7 @@ abstract class FileWatchServiceSpec extends Specification {
   }
 
   private def watchFiles[T](files: File*)(block: => T): T = {
-    val watcher = watchService.watch(files.map(_.toJava).asJava, () => reportChange())
+    val watcher = watchService.watch(files.map(_.toJava).asJava, maybePath => reportChange())
     reset()
     try {
       block
