@@ -18,6 +18,8 @@ Global / onLoad := (Global / onLoad).value.andThen { s =>
   s
 }
 
+ThisBuild / javafmtFormatterCompatibleJavaVersion := 17
+
 val previousVersion: Option[String] = Some("2.0.0")
 
 lazy val `play-file-watch` = project
