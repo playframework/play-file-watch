@@ -9,6 +9,9 @@ import io.methvin.watchservice.MacOSXListeningWatchService;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -37,7 +40,7 @@ public class DefaultFileWatchService implements FileWatchService {
   }
 
   @Override
-  public FileWatcher watch(Iterable<File> filesToWatch, Runnable onChange) {
+  public FileWatcher watch(Iterable<File> filesToWatch, Consumer<Optional<Path>> onChange) {
     var dirsToWatch =
         StreamSupport.stream(filesToWatch.spliterator(), false)
             .filter(
@@ -65,7 +68,7 @@ public class DefaultFileWatchService implements FileWatchService {
       var directoryWatcher =
           DirectoryWatcher.builder()
               .paths(dirsToWatch.map(File::toPath).collect(Collectors.toList()))
-              .listener(__ -> onChange.run())
+              .listener(dirChangeEvent -> onChange.accept(Optional.of(dirChangeEvent.path())))
               .fileHashing(!disableFileHashCheck)
               .watchService(watchService)
               .build();
