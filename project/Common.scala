@@ -47,9 +47,9 @@ object Common extends AutoPlugin {
     Seq(
       organization         := "org.playframework",
       organizationName     := "The Play Framework Project",
-      organizationHomepage := Some(url("https://playframework.com/")),
-      homepage             := Some(url(s"https://github.com/playframework/${repoName}")),
-      licenses             := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.html")),
+      organizationHomepage := Some(uri("https://playframework.com/")),
+      homepage             := Some(uri(s"https://github.com/playframework/${repoName}")),
+      licenses             := Seq(License("Apache-2.0", uri("https://www.apache.org/licenses/LICENSE-2.0.html"))),
       scalaVersion         := "2.13.16",
       crossPaths           := false,
       autoScalaLibrary     := false,
@@ -57,7 +57,7 @@ object Common extends AutoPlugin {
       compile / javacOptions ++= javacParameters,
       scmInfo := Some(
         ScmInfo(
-          url(s"https://github.com/playframework/${repoName}"),
+          uri(s"https://github.com/playframework/${repoName}"),
           s"scm:git:git@github.com:playframework/${repoName}.git"
         )
       ),
@@ -65,7 +65,7 @@ object Common extends AutoPlugin {
         "playframework",
         "The Play Framework Contributors",
         "contact@playframework.com",
-        url("https://github.com/playframework")
+        uri("https://github.com/playframework")
       ),
       description := "Play File Watch Library. Watch files in a platform independent way."
     )
@@ -81,10 +81,11 @@ object Common extends AutoPlugin {
       FileType("properties") -> HeaderCommentStyle.hashLineComment,
       FileType("md") -> CommentStyle(new LineCommentCreator("<!---", "-->"), commentBetween("<!---", "*", "-->"))
     ),
-    (Compile / headerSources) ++=
+    (Compile / headerSources) ++= Def.uncached(
       ((baseDirectory.value ** ("*.properties" || "*.md" || "*.sbt"))
-        --- (baseDirectory.value ** "target" ** "*")).get ++
-        (baseDirectory.value / "project" ** "*.scala" --- (baseDirectory.value ** "target" ** "*")).get
+        --- (baseDirectory.value ** "target" ** "*")).get() ++
+        (baseDirectory.value / "project" ** "*.scala" --- (baseDirectory.value ** "target" ** "*")).get()
+    ),
   )
 
 }
