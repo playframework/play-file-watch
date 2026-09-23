@@ -50,7 +50,7 @@ object Common extends AutoPlugin {
       organizationHomepage := Some(uri("https://playframework.com/")),
       homepage             := Some(uri(s"https://github.com/playframework/${repoName}")),
       licenses             := Seq(License("Apache-2.0", uri("https://www.apache.org/licenses/LICENSE-2.0.html"))),
-      scalaVersion         := "2.13.16",
+      scalaVersion         := "2.13.18",
       crossPaths           := false,
       autoScalaLibrary     := false,
       scalacOptions ++= scalacParameters,
