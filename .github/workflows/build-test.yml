@@ -38,7 +38,7 @@ jobs:
     uses: playframework/.github/.github/workflows/cmd.yml@v4
     with:
       java: 25, 21, 17
-      cmd: sbt test
+      cmd: sbt testFull
 
   finish:
     name: Finish
